@@ -28,8 +28,14 @@ class PaymentNotification
 		$notif->hydrate(json_decode(json_encode($data)));
 		
 		if ($notif->getSignature() != Security::getSignature($data, $apiKey))
+		{
+			Logger::getInstance()->write('Signature diff failed');
+			Logger::getInstance()->write('Notification: ');
+			Logger::getInstance()->write($data);
+			Logger::getInstance()->write('Used api key: '.$apiKey);
 			throw new \RuntimeException('The signature is incorrect', 12);
-		
+		}
+    
 		return $notif;
 	}
 	
