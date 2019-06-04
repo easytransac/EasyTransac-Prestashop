@@ -18,7 +18,7 @@ class EasyTransac extends PaymentModule
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.2';
+        $this->version = '3.0.3';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
@@ -291,12 +291,20 @@ class EasyTransac extends PaymentModule
         if (!$this->active) {
             return;
         }
+        $this->loginit();
         $newOption = new PaymentOption();
-        $paymentForm = $this->fetch('module:easytransac/views/templates/hook/checkout_payment.tpl');
+        // $paymentForm = $this->fetch('module:easytransac/views/templates/hook/checkout_payment.tpl');
         $newOption->setCallToActionText($this->l('Pay by EasyTransac'))
-            ->setForm($paymentForm)
-            ->setLogo(_MODULE_DIR_ . 'easytransac/logo.png')
-            ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+        ->setLogo(_MODULE_DIR_ . 'easytransac/logo.png')
+        ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+        
+        EasyTransac\Core\Logger::getInstance()->write($this->context->customer);
+        if (Configuration::get('EASYTRANSAC_ONECLICK') && $this->context->customer->getClient_id() != null)
+        {
+            $oneClickPaymentForm = $this->context->smarty->fetch('module:easytransac/views/templates/hook/oneclick_payment.tpl');
+            $newOption->setAdditionalInformation($oneClickPaymentForm);
+        }
+        
         return [$newOption];
     }
 

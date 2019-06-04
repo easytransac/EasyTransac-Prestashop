@@ -25,6 +25,11 @@ class EasyTransacPaymentModuleFrontController extends ModuleFrontController
 		EasyTransac\Core\Logger::getInstance()->write('Start Payment Page Request');
 		EasyTransac\Core\Services::getInstance()->provideAPIKey($api_key);
 
+		// Replaces "+" with "00" since there is no calling code field
+		if (strpos($user_address->phone, "+") !== false) {
+			$user_address->phone = str_replace( "+", "00", $user_address->phone);
+		}
+
 		// SDK Payment Page
 		$customer_ET = (new EasyTransac\Entities\Customer())
 				->setEmail($customer->email)

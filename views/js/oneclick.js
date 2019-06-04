@@ -1,7 +1,7 @@
 /* 
  * EasyTransac oneclick.js
  */
-jQuery(function ($) {
+window.onload = function() { jQuery(function ($) {
     // Double load failsafe.
     var session_id = 'easytransac-oneclick' + Date.now();
     
@@ -14,7 +14,7 @@ jQuery(function ($) {
     var listcards_url = location.protocol + '//' + document.domain + '/module/easytransac/listcards';
     var oneclick_url = location.protocol + '//' + document.domain + '/module/easytransac/oneclick';
     
-    $('#'+session_id).html('<span id="etocloa001">OneClick loading ...</span>');
+    $('#'+session_id).html('<span id="etocloa001">Chargement ...</span>');
     
     // JSON Call
     $.getJSON(listcards_url, {}, buildFromJson);
@@ -35,17 +35,26 @@ jQuery(function ($) {
         var _space = $('#'+session_id);
 
         // Label
-        _space.append($('<span style="width:100px;color: #5FAB8D;font-size: 20px;" title="Direct credit card payment">EasyTransac OneClick : </span>'));
+        var label = $('<span style="width:100px;" title="Direct credit card payment"></span>')
+        if (typeof(chooseCard) !== 'undefined')  {
+            label[0].innerHTML = chooseCard;
+        }
+        _space.append(label);
 
         // Dropdown
-        _space.append($('<select id="etalcadd001" name="oneclick_alias" style="width:200px; margin-left:10px;text-align:center;">'));
+        _space.append($('<select id="etalcadd001" name="oneclick_alias" style="width:200p;margin-top:10px;text-align:center;">'));
+        
         $.each(json.packet, function (i, row) {
             $('#etalcadd001')
-                .append($('<option value="' + row.Alias + '">' + row.CardNumber + '</option>'));
+                .append($('<option value="' + row.Alias + '">' + row.CardNumber + " " + row.CardMonth + "/" + row.CardYear + '</option>'));
         });
 
         // Button
-        _space.append($(' <input type="submit" id="etocbu001" class="button" style="width:150px; margin-left:15px;text-align:center;" value="OneClick pay">'));
+        var button = $(' <input type="submit" id="etocbu001" class="button" style="width:150px;margin-top:15px;text-align:center;">');
+        if (typeof(payNow) !== 'undefined') {
+            button[0].value = payNow;
+        }
+        _space.append(button);
 
         // Button click/*
         $('#etocbu001').click(function (e) {
@@ -87,3 +96,4 @@ jQuery(function ($) {
         });
     }
 });
+}

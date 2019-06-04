@@ -11,10 +11,12 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 	 */
 	public function postProcess()
 	{
-		if (!$this->context->customer->id || empty($_POST['Alias']) || !$this->context->cart->id)
-			die;
 		$this->module->loginit();
 		EasyTransac\Core\Logger::getInstance()->write('Start Oneclick');
+		
+		EasyTransac\Core\Logger::getInstance()->write($this->context->cart->getOrderTotal(true, Cart::BOTH));
+		if (!$this->context->customer->id || empty($_POST['Alias']) || !$this->context->cart->id)
+			die;
 
 		$dump_path = __DIR__ . '/dump';
 		$api_key = Configuration::get('EASYTRANSAC_API_KEY');
