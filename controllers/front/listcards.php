@@ -21,10 +21,10 @@ class EasyTransacListcardsModuleFrontController extends ModuleFrontController
 		EasyTransac\Core\Logger::getInstance()->write($this->context->customer->getClient_id());
 		EasyTransac\Core\Services::getInstance()->provideAPIKey(Configuration::get('EASYTRANSAC_API_KEY'));
 		$clientId = $this->context->customer->getClient_id();
-		// if ($clientId == null)
-		// {
-		// 	die(json_encode(array("status" => "-1")));
-		// }
+		if (empty($clientId))
+		{
+			die(json_encode(array('status' => 0)));
+		}
 		$customer = (new EasyTransac\Entities\Customer())->setClientId($clientId);
 
 		$request = new EasyTransac\Requests\CreditCardsList();
