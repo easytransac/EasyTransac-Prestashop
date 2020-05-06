@@ -279,6 +279,7 @@ class EasyTransac extends PaymentModule
         $helper->fields_value['EASYTRANSAC_3DSECURE'] = Configuration::get('EASYTRANSAC_3DSECURE');
         $helper->fields_value['EASYTRANSAC_NOTIFICATION_URL'] = Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/notification';
         $helper->fields_value['EASYTRANSAC_HELP'] = $this->l('Visit') . ' <a target="_blank" href="https://www.easytransac.com">www.easytransac.com</a> ' . $this->l('in order to create an account and configure your application.');
+        $helper->fields_value['EASYTRANSAC_REQUIREMENTS_HELP'] = Configuration::get('EASYTRANSAC_REQUIREMENTS_HELP');
 
         return $helper->generateForm($fields_form);
     }
