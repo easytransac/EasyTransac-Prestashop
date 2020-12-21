@@ -3,7 +3,7 @@
 namespace EasyTransac\Entities;
 
 /**
- * Represents arguments for the request "AddUser" and "UpdateUser"
+ * Represents arguments for the requests "FindUser", "AddUser", "UpdateUser"
  * @author klyde
  * @copyright EasyTransac
  */
@@ -35,6 +35,8 @@ class User extends Entity
     protected $phone = null;
     /** @map:BirthDate **/
     protected $birthDate = null;
+	/** @map:BirthName **/
+	protected $birthName = null;
     /** @map:Nationality **/
     protected $nationality = null;
     /** @map:AccountOwner **/
@@ -61,6 +63,36 @@ class User extends Entity
     protected $tester = null;
     /** @map:CompanyLogo **/
     protected $companyLogo = null;
+    /** @map:CompanyType **/
+    protected $companyType = null;
+	/** @map:CompanyAddress0 **/
+	protected $companyAddress0 = null;
+	/** @map:CompanyAddress **/
+	protected $companyAddress = null;
+	/** @map:CompanyCity **/
+	protected $companyCity = null;
+	/** @map:CompanyZipCode **/
+	protected $companyZipCode = null;
+    /** @map:CompanyCountry **/
+    protected $companyCountry = null;
+    /** @map:Gender **/
+    protected $gender = null;
+    /** @map:Country **/
+    protected $country = null;
+    /** @map:WelcomeEmail **/
+    protected $welcomeEmail = null;
+	/** @map:KYC **/
+	protected $kyc = null;
+	/** @map:PSPApproved **/
+	protected $pspApproved = null;
+	/** @map:CompleteActivities **/
+	protected $completeActivities = null;
+	/** @map:CompleteDocuments **/
+	protected $completeDocuments = null;
+	/** @map:Logo **/
+	protected $logo = null;
+	/** @map:Live **/
+	protected $live = null;
 
     public function getId()
     {
@@ -205,6 +237,17 @@ class User extends Entity
         return $this;
     }
 
+	public function getBirthName()
+	{
+		return $this->birthName;
+	}
+
+	public function setBirthName($birthName)
+	{
+		$this->birthName = $birthName;
+		return $this;
+	}
+
     public function getNationality()
     {
         return $this->nationality;
@@ -271,11 +314,6 @@ class User extends Entity
         return $this;
     }
 
-    public function getActivationEmail()
-    {
-        return $this->activationEmail;
-    }
-
     public function setActivationEmail($activationEmail)
     {
         $this->activationEmail = $activationEmail;
@@ -287,21 +325,9 @@ class User extends Entity
         return $this->joinDate;
     }
 
-    public function setJoinDate($joinDate)
-    {
-        $this->joinDate = $joinDate;
-        return $this;
-    }
-
     public function getBalance()
     {
         return $this->balance;
-    }
-
-    public function setBalance($balance)
-    {
-        $this->balance = $balance;
-        return $this;
     }
 
     public function getConditionsAccepted()
@@ -331,12 +357,6 @@ class User extends Entity
         return $this->tester;
     }
 
-    public function setTester($tester)
-    {
-        $this->tester = $tester;
-        return $this;
-    }
-
     public function getCompanyLogo()
     {
         return $this->companyLogo;
@@ -347,6 +367,130 @@ class User extends Entity
         $this->companyLogo = $companyLogo;
         return $this;
     }
+    
+    public function getCompanyType()
+    {
+        return $this->companyType;
+    }
+
+    public function setCompanyType($companyType)
+    {
+        $this->companyType = $companyType;
+        return $this;
+    }
+
+	public function getCompanyAddress0()
+	{
+		return $this->companyAddress0;
+	}
+
+	public function setCompanyAddress0($companyAddress0)
+	{
+		$this->companyAddress0 = $companyAddress0;
+		return $this;
+	}
+
+	public function getCompanyAddress()
+	{
+		return $this->companyAddress;
+	}
+
+	public function setCompanyAddress($companyAddress)
+	{
+		$this->companyAddress = $companyAddress;
+		return $this;
+	}
+
+	public function getCompanyCity()
+	{
+		return $this->companyCity;
+	}
+
+	public function setCompanyCity($companyCity)
+	{
+		$this->companyCity = $companyCity;
+		return $this;
+	}
+
+	public function getCompanyZipCode()
+	{
+		return $this->companyZipCode;
+	}
+
+	public function setCompanyZipCode($companyZipCode)
+	{
+		$this->companyZipCode = $companyZipCode;
+		return $this;
+	}
+    
+    public function getCompanyCountry()
+    {
+        return $this->companyCountry;
+    }
+
+    public function setCompanyCountry($companyCountry)
+    {
+        $this->companyCountry = $companyCountry;
+        return $this;
+    }
+    
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
+        return $this;
+    }
+    
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    public function setCountry($country)
+    {
+        $this->country = $country;
+        return $this;
+    }
+
+    public function setWelcomeEmail($welcomeEmail)
+    {
+    	$this->welcomeEmail = $welcomeEmail;
+        return $this;
+    }
+
+	public function getKYC()
+	{
+		return $this->kyc;
+	}
+
+	public function getPSPApproved()
+	{
+		return $this->pspApproved;
+	}
+
+	public function getCompleteActivities()
+	{
+		return $this->completeActivities;
+	}
+
+	public function getCompleteDocuments()
+	{
+		return $this->completeDocuments;
+	}
+
+	public function getLogo()
+	{
+		return $this->logo;
+	}
+
+	public function getLive()
+	{
+		return $this->live;
+	}
 }
 
 ?>

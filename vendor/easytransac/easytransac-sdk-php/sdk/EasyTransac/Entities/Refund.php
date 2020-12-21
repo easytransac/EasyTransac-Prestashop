@@ -13,21 +13,27 @@ class Refund extends Entity
     protected $tid = null;
     /** @map:Language **/
     protected $language = null;
+    /** @map:Amount **/
+    protected $amount = null;
+    /** @map:Reason **/
+    protected $reason = null;
 
-    public function getTid()
+    public function setAmount($amount)
     {
-        return $this->tid;
+        $this->amount = $amount;
+        return $this;
     }
-
+    
+    public function setReason($reason)
+    {
+    	$this->reason = $reason;
+        return $this;
+    }
+    
     public function setTid($tid)
     {
         $this->tid = $tid;
         return $this;
-    }
-
-    public function getLanguage()
-    {
-        return $this->language;
     }
 
     public function setLanguage($language)

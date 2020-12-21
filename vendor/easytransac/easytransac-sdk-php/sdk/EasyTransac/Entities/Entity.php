@@ -5,6 +5,8 @@ namespace EasyTransac\Entities;
 use \EasyTransac\Core\CommentParser;
 use \EasyTransac\Core\Services;
 use EasyTransac\Core\Logger;
+use EasyTransac\Converters\BooleanToString;
+use EasyTransac\Converters\YesNoLowerCase;
 
 /**
  * Generic entity
@@ -13,11 +15,65 @@ use EasyTransac\Core\Logger;
  */
 abstract class Entity
 {
-    protected $mapping = array();
+    protected $mapping = [];
+    protected $additionalFields = [];
+    protected $converters = [];
 
     public function __construct()
     {
+    	$this->addConverter(new BooleanToString());
+    	$this->addConverter(new YesNoLowerCase());
         $this->makeMapping();
+    }
+
+    /**
+     * Attach a api argument converter
+     * @param \EasyTransac\Converters\IConverter $converter
+     * @return \EasyTransac\Entities\Entity
+     */
+    public function addConverter(\EasyTransac\Converters\IConverter $converter)
+    {
+    	$this->converters[] = $converter;
+
+    	return $this;
+    }
+
+    /**
+     * Call all registred converters
+     * @param Mixed $value
+     * @return Mixed
+     */
+    public function callConverters($value)
+    {
+        if ($this->converters)
+        {
+        	foreach ($this->converters as $converter)
+        		$value = $converter->convert($value) ;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Allows to set a value not yet implemented in the SDK but available in the API
+     * @param String $name Name of the parameter to set
+     * @param Array $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+    	if (preg_match('#^get(.*)$#', $name, $matches))
+    	{
+    		if (array_key_exists($matches[1], $this->additionalFields))
+    			return $this->additionalFields[$matches[1]];
+    		else
+    			return null;
+    	}
+    	else if (preg_match('#^set(.*)$#', $name, $matches) && count($arguments) > 0)
+    	{
+    		$this->additionalFields[$matches[1]] = $arguments[0];
+    		return $this;
+    	}
     }
 
     /**
@@ -31,10 +87,10 @@ abstract class Entity
         if (is_array($fields))
             $this->hydrateWithArray($fields, $checkRequired);
         else if(is_object($fields))
-            $this->hydrateWidthObject($fields, $checkRequired);
+            $this->hydrateWithObject($fields, $checkRequired);
 
         Logger::getInstance()->write($this->toArray());
-        
+
         return $this;
     }
 
@@ -52,7 +108,7 @@ abstract class Entity
 
             if ($value['type'] == 'map')
             {
-                $out[$value['name']] = $this->{$key};
+                $out[$value['name']] = $this->callConverters($this->{$key});
             }
             else if ($value['type'] == 'array')
             {
@@ -65,9 +121,29 @@ abstract class Entity
                 $out += $this->{$key}->toArray();
         }
 
+        // Add also the additional fields
+        if (!empty($this->additionalFields))
+        {
+        	foreach ($this->additionalFields as $key => $additionalField)
+        	{
+        		if (is_array($additionalField))
+        		{
+        			$list = array();
+        			foreach ($additionalField as $c)
+        				$list[] = $c->toArray();
+
+        			$out[$key] = $list;
+        		}
+        		else if (is_object($additionalField))
+        			$out += $additionalField->toArray();
+        		else
+        			$out[$key] = $this->callConverters($additionalField);
+        	}
+        }
+
         return $out;
     }
-    
+
     /**
      * Fill the entity with an list of entity (see: CreditCardList with comment tag @array)
      * @param Array<Entity> $itemsList
@@ -79,10 +155,10 @@ abstract class Entity
         foreach ($this->mapping as $key => $value)
             if ($value['type'] == 'array')
                 $field = $value;
-    
+
         if ($field == null)
             return;
-    
+
         $list = array();
         foreach ($itemsList as $item)
         {
@@ -93,13 +169,13 @@ abstract class Entity
         }
         $this->{$field['field']} = $list;
     }
-    
+
     /**
      * Fill the entity with the API json response
      * @param \stdClass $fields
      * @param Boolean $checkRequired
      */
-    protected function hydrateWidthObject($fields, $checkRequired = false)
+    protected function hydrateWithObject($fields, $checkRequired = false)
     {
         foreach ($this->mapping as $key => $value)
         {

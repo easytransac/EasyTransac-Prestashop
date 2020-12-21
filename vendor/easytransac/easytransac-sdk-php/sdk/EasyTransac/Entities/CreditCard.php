@@ -21,32 +21,32 @@ class CreditCard extends Entity
     protected $owner = null;
     /** @map:Alias **/
     protected $alias = null;
-    /** @map:EOM **/
-    protected $eom = null;
-    /** @map:KSN **/
-    protected $ksn = null;
+    /** @map:ClientId **/
+    protected $clientId = null;
     /** @map:CardType **/
     protected $type = null;
     /** @map:CardCountry **/
     protected $country = null;
     /** @map:LastAccessed **/
     protected $lastAccessed = null;
+    /** @map:Verified **/
+    protected $verified = null;
+    /** @map:Status **/
+    protected $status = null;
 
-    public function setLastAccessed($value)
-    {
-        $this->lastAccessed = $value;
-        return $this;
-    }
-    
     public function getLastAccessed()
     {
         return $this->lastAccessed;
     }
 
-    public function setCountry($value)
+    public function getVerified()
     {
-        $this->country = $value;
-        return $this;
+        return $this->verified;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     public function getCountry()
@@ -54,37 +54,9 @@ class CreditCard extends Entity
         return $this->country;
     }
 
-    public function setType($value)
-    {
-        $this->type = $value;
-        return $this;
-    }
-
     public function getType()
     {
         return $this->type;
-    }
-
-    public function setKsn($value)
-    {
-        $this->ksn = $value;
-        return $this;
-    }
-
-    public function getKsn()
-    {
-        return $this->ksn;
-    }
-
-    public function setEom($value)
-    {
-        $this->eom = $value;
-        return $this;
-    }
-
-    public function getEom()
-    {
-        return $this->eom;
     }
 
     public function setAlias($value)
@@ -96,6 +68,17 @@ class CreditCard extends Entity
     public function getAlias()
     {
         return $this->alias;
+    }
+    
+    public function setClientId($value)
+    {
+        $this->clientId = $value;
+        return $this;
+    }
+
+    public function getClientId()
+    {
+        return $this->clientId;
     }
 
     public function setOwner($value)

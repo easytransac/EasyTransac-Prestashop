@@ -4,6 +4,8 @@ namespace EasyTransac\Entities;
 
 use \EasyTransac\Core\CommentParser;
 use \EasyTransac\Core\Services;
+use EasyTransac\Core\Logger;
+use EasyTransac\Converters\BooleanToString;
 
 /**
  * Generic entity
@@ -12,26 +14,82 @@ use \EasyTransac\Core\Services;
  */
 abstract class Entity
 {
-    protected $mapping = array();
-
+    protected $mapping = [];
+    protected $additionalFields = [];
+    protected $converters = [];
+	
     public function __construct()
     {
+    	$this->addConverter(new BooleanToString());
         $this->makeMapping();
+    }
+    
+    /**
+     * Attach a api argument converter
+     * @param EasyTransac\Converters\IConverter $converter
+     * @return \EasyTransac\Entities\Entity
+     */
+    public function addConverter(\EasyTransac\Converters\IConverter $converter)
+    {
+    	$this->converters[] = $converter;
+    	
+    	return $this;
+    }
+    
+    /**
+     * Call all registred converters
+     * @param Mixed $value
+     * @return Mixed
+     */
+    public function callConverters($value)
+    {
+        if ($this->converters)
+        {
+        	foreach ($this->converters as $converter)
+        		$value = $converter->convert($value) ;
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Allows to set a value not yet implemented in the SDK but available in the API
+     * @param String $name Name of the parameter to set
+     * @param Array $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments) 
+    {
+    	if (preg_match('#^get(.*)$#', $name, $matches))
+    	{
+    		if (array_key_exists($matches[1], $this->additionalFields))
+    			return $this->additionalFields[$matches[1]];
+    		else
+    			return null;
+    	}
+    	else if (preg_match('#^set(.*)$#', $name, $matches) && count($arguments) > 0)
+    	{
+    		$this->additionalFields[$matches[1]] = $arguments[0];
+    		return $this;
+    	}
     }
 
     /**
      * Allows to fill the entity with data returned by the EasyTransac API
-     * @param Array/stdClass $fields
+     * @param Mixed $fields Array or \stdClass
+     * @param Boolean $checkRequired
+     * @return \EasyTransac\Entities\Entity
      */
-    public function hydrate($fields)
+    public function hydrate($fields, $checkRequired = false)
     {
         if (is_array($fields))
-            $this->hydrateWithArray($fields);
+            $this->hydrateWithArray($fields, $checkRequired);
         else if(is_object($fields))
-            $this->hydrateWidthObject($fields);
+            $this->hydrateWidthObject($fields, $checkRequired);
 
-        if (Services::getInstance()->isDebug())
-            var_dump($this->toArray());
+        Logger::getInstance()->write($this->toArray());
+        
+        return $this;
     }
 
     /**
@@ -48,14 +106,8 @@ abstract class Entity
 
             if ($value['type'] == 'map')
             {
-                $out[$value['name']] = $this->{$key};
-                if ($out[$value['name']] == 'yes')
-                    $out[$value['name']] = true;
-                else if ($out[$value['name']] == 'no')
-                    $out[$value['name']] = false;
+                $out[$value['name']] = $this->callConverters($this->{$key});
             }
-            else if ($value['type'] == 'object')
-                $out += $this->{$key}->toArray();
             else if ($value['type'] == 'array')
             {
                 $list = array();
@@ -63,6 +115,28 @@ abstract class Entity
                     $list[] = $c->toArray();
                 $out[$value['name']] = $list;
             }
+            else if ($value['type'] == 'object')
+                $out += $this->{$key}->toArray();
+        }
+        
+        // Add also the additional fields
+        if (!empty($this->additionalFields))
+        {
+        	foreach ($this->additionalFields as $key => $additionalField)
+        	{
+        		if (is_array($additionalField))
+        		{
+        			$list = array();
+        			foreach ($additionalField as $c)
+        				$list[] = $c->toArray();
+        				
+        			$out[$key] = $list;
+        		}
+        		else if (is_object($additionalField))
+        			$out += $additionalField->toArray();
+        		else
+        			$out[$key] = $this->callConverters($additionalField);
+        	}
         }
 
         return $out;
@@ -71,8 +145,9 @@ abstract class Entity
     /**
      * Fill the entity with an list of entity (see: CreditCardList with comment tag @array)
      * @param Array<Entity> $itemsList
+     * @param Boolean $checkRequired
      */
-    protected function hydrateWithArray($itemsList)
+    protected function hydrateWithArray($itemsList, $checkRequired = false)
     {
         $field = null;
         foreach ($this->mapping as $key => $value)
@@ -96,20 +171,23 @@ abstract class Entity
     /**
      * Fill the entity with the API json response
      * @param \stdClass $fields
+     * @param Boolean $checkRequired
      */
-    protected function hydrateWidthObject($fields)
+    protected function hydrateWidthObject($fields, $checkRequired = false)
     {
         foreach ($this->mapping as $key => $value)
         {
-            if ($value['type'] == 'map' && isset($fields->{$value['name']}))
+            if ($value['type'] == 'map' && property_exists($fields, $value['name']))
             {
                 $this->{$key} = $fields->{$value['name']};
-                if ($this->{$key} == 'yes')
-                    $this->{$key} = true;
-                if ($this->{$key} == 'no')
-                    $this->{$key} = false;
             }
-    
+            else if($value['type'] == 'object' && property_exists($fields, $value['name']))
+            {
+            	$className = '\\EasyTransac\\Entities\\'.$value['name'];
+            	$e = new $className();
+            	$e->hydrate($fields->{$value['name']});
+            	$this->{$key} = $e;
+            }
         }
     }
 

@@ -11,8 +11,14 @@ class PaymentPageTransaction extends Entity
 {
     /** @map:SendEmail **/
     protected $sendEmail = null;
+    /** @map:SendSMS **/
+    protected $sendSMS = null;
+    /** @map:SendLater **/
+    protected $sendLater = null;
     /** @map:OrderId **/
     protected $orderId = null;
+    /** @map:OperationType **/
+    protected $operationType = null;
     /** @map:Description **/
     protected $description = null;
     /** @map:Amount **/
@@ -43,8 +49,18 @@ class PaymentPageTransaction extends Entity
     protected $userAgent = null;
     /** @map:Language **/
     protected $language = null;
-    /** @map:Version **/
-    protected $version = null;
+    /** @map:AskAmount **/
+    protected $askAmount = null;
+    /** @map:AskInvoiceNumber **/
+    protected $askInvoiceNumber = null;
+    /** @map:PreAuth **/
+    protected $preAuth = null;
+    /** @map:PreAuthDuration **/
+    protected $preAuthDuration = null;
+    /** @map:SddCallingCode **/
+    protected $sddCallingCode = null;
+    /** @map:SddPhone **/
+    protected $sddPhone = null;
 
     public function __construct()
     {
@@ -56,57 +72,41 @@ class PaymentPageTransaction extends Entity
     	if (isset($_SERVER['HTTP_USER_AGENT']) && !empty($_SERVER['HTTP_USER_AGENT']))
     		$this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
     }
-    
-    public function getSendEmail()
-    {
-        return $this->sendEmail;
-    }
 
     public function setSendEmail($sendEmail)
     {
         $this->sendEmail = $sendEmail;
-
         return $this;
     }
 
-    public function getVersion()
-    {
-        return $this->version;
-    }
+	public function setSendSMS($sendSMS)
+	{
+		$this->sendSMS = $sendSMS;
+		return $this;
+	}
 
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    public function getOrderId()
-    {
-        return $this->orderId;
-    }
+	public function setSendLater($date)
+	{
+		$this->sendLater = $date;
+		return $this;
+	}
 
     public function setOrderId($orderId)
     {
         $this->orderId = $orderId;
-
         return $this;
     }
 
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	public function setOperationType($operationType)
+	{
+		$this->operationType = $operationType;
+		return $this;
+	}
 
     public function setDescription($description)
     {
         $this->description = $description;
         return $this;
-    }
-
-    public function getAmount()
-    {
-        return $this->amount;
     }
 
     public function setAmount($amount)
@@ -115,20 +115,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getClientIP()
-    {
-        return $this->clientIP;
-    }
-
     public function setClientIP($clientIP)
     {
         $this->clientIP = $clientIP;
         return $this;
-    }
-
-    public function getSecure()
-    {
-        return $this->secure;
     }
 
     public function setSecure($secure)
@@ -137,20 +127,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getReturnUrl()
-    {
-        return $this->returnUrl;
-    }
-
     public function setReturnUrl($returnUrl)
     {
         $this->returnUrl = $returnUrl;
         return $this;
-    }
-
-    public function getCancelUrl()
-    {
-        return $this->cancelUrl;
     }
 
     public function setCancelUrl($cancelUrl)
@@ -159,20 +139,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getCustomer()
-    {
-        return $this->customer;
-    }
-
     public function setCustomer(Entity $customer)
     {
         $this->customer = $customer;
         return $this;
-    }
-
-    public function getMultiplePayments()
-    {
-        return $this->multiplePayments;
     }
 
     public function setMultiplePayments($multiplePayments)
@@ -181,20 +151,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getMultiplePaymentsRepeat()
-    {
-        return $this->multiplePaymentsRepeat;
-    }
-
     public function setMultiplePaymentsRepeat($multiplePaymentsRepeat)
     {
         $this->multiplePaymentsRepeat = $multiplePaymentsRepeat;
         return $this;
-    }
-
-    public function getDownPayment()
-    {
-        return $this->downPayment;
     }
 
     public function setDownPayment($downPayment)
@@ -203,20 +163,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getRebill()
-    {
-        return $this->Rebill;
-    }
-
     public function setRebill($Rebill)
     {
         $this->Rebill = $Rebill;
         return $this;
-    }
-
-    public function getRecurrence()
-    {
-        return $this->recurrence;
     }
 
     public function setRecurrence($recurrence)
@@ -225,20 +175,10 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getPayToEmail()
-    {
-        return $this->payToEmail;
-    }
-
     public function setPayToEmail($payToEmail)
     {
         $this->payToEmail = $payToEmail;
         return $this;
-    }
-
-    public function getUserAgent()
-    {
-        return $this->userAgent;
     }
 
     public function setUserAgent($userAgent)
@@ -247,14 +187,45 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
     public function setLanguage($language)
     {
         $this->language = $language;
+        return $this;
+    }
+
+    public function setAskAmount($askAmount)
+    {
+    	$this->askAmount = $askAmount;
+        return $this;
+    }
+
+    public function setAskInvoiceNumber($askInvoiceNumber)
+    {
+    	$this->askInvoiceNumber = $askInvoiceNumber;
+        return $this;
+    }
+
+    public function setPreAuth($preAuth)
+    {
+    	$this->preAuth = $preAuth;
+        return $this;
+    }
+
+    public function setPreAuthDuration($preAuthDuration)
+    {
+        $this->preAuthDuration = $preAuthDuration;
+        return $this;
+    }
+
+    public function setSddCallingCode($sddCallingCode)
+    {
+        $this->sddCallingCode = $sddCallingCode;
+        return $this;
+    }
+
+    public function setSddPhone($sddPhone)
+    {
+        $this->sddPhone = $sddPhone;
         return $this;
     }
 }

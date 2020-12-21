@@ -1,23 +1,23 @@
 [
     {
         "name": "easytransac/easytransac-sdk-php",
-        "version": "1.0.11",
-        "version_normalized": "1.0.11.0",
+        "version": "1.2.1",
+        "version_normalized": "1.2.1.0",
         "source": {
             "type": "git",
             "url": "https://github.com/easytransac/easytransac-sdk-php.git",
-            "reference": "a29f77e15184525525b3b8e9bea837c181287d14"
+            "reference": "b5992f699f9865a238027865eae67e1a5ae023a8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/easytransac/easytransac-sdk-php/zipball/a29f77e15184525525b3b8e9bea837c181287d14",
-            "reference": "a29f77e15184525525b3b8e9bea837c181287d14",
+            "url": "https://api.github.com/repos/easytransac/easytransac-sdk-php/zipball/b5992f699f9865a238027865eae67e1a5ae023a8",
+            "reference": "b5992f699f9865a238027865eae67e1a5ae023a8",
             "shasum": ""
         },
         "require": {
             "php": ">=5.5"
         },
-        "time": "2018-02-12T10:58:57+00:00",
+        "time": "2020-12-07T09:28:26+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

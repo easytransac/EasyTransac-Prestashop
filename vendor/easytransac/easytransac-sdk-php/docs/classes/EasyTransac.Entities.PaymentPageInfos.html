@@ -120,8 +120,26 @@
             <i class="icon-custom icon-method"></i> Methods
             <ul>
                                                                                                     <li class="method public inherited">
+        <a href="#method___call" title="__call :: Allows to set a value not yet implemented in the SDK but available in the API">
+            <span class="description">Allows to set a value not yet implemented in the SDK but available in the API</span><pre>__call</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
         <a href="#method___construct" title="__construct :: ">
             <span class="description"></span><pre>__construct</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_addConverter" title="addConverter :: Attach a api argument converter">
+            <span class="description">Attach a api argument converter</span><pre>addConverter</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_callConverters" title="callConverters :: Call all registred converters">
+            <span class="description">Call all registred converters</span><pre>callConverters</pre>
         </a>
     </li>
 
@@ -134,6 +152,12 @@
                                                                                                         <li class="method public">
         <a href="#method_getDate" title="getDate :: ">
             <span class="description"></span><pre>getDate</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public">
+        <a href="#method_getDateSent" title="getDateSent :: ">
+            <span class="description"></span><pre>getDateSent</pre>
         </a>
     </li>
 
@@ -156,8 +180,8 @@
     </li>
 
                                                                                                         <li class="method public">
-        <a href="#method_getMailSent" title="getMailSent :: ">
-            <span class="description"></span><pre>getMailSent</pre>
+        <a href="#method_getOperationType" title="getOperationType :: ">
+            <span class="description"></span><pre>getOperationType</pre>
         </a>
     </li>
 
@@ -204,6 +228,12 @@
     </li>
 
                                                                                                         <li class="method public">
+        <a href="#method_setDateSent" title="setDateSent :: ">
+            <span class="description"></span><pre>setDateSent</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public">
         <a href="#method_setEmail" title="setEmail :: ">
             <span class="description"></span><pre>setEmail</pre>
         </a>
@@ -222,8 +252,8 @@
     </li>
 
                                                                                                         <li class="method public">
-        <a href="#method_setMailSent" title="setMailSent :: ">
-            <span class="description"></span><pre>setMailSent</pre>
+        <a href="#method_setOperationType" title="setOperationType :: ">
+            <span class="description"></span><pre>setOperationType</pre>
         </a>
     </li>
 
@@ -261,7 +291,7 @@
         </li>
         <li class="nav-header protected">» Protected
             <ul>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="method protected inherited">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <li class="method protected inherited">
                             <a href="#method_hydrateWidthObject" title="hydrateWidthObject :: Fill the entity with the API json response">
                                 <span class="description">Fill the entity with the API json response</span><pre>hydrateWidthObject</pre>
                             </a>
@@ -271,16 +301,16 @@
                                 <span class="description">Fill the entity with an list of entity (see: CreditCardList with comment tag @array)</span><pre>hydrateWithArray</pre>
                             </a>
                         </li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </ul>
         </li>
         <li class="nav-header private">» Private
             <ul>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <li class="method private inherited">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <li class="method private inherited">
                             <a href="#method_makeMapping" title="makeMapping :: Make the mapping between class attributes and API fields">
                                 <span class="description">Make the mapping between class attributes and API fields</span><pre>makeMapping</pre>
                             </a>
                         </li>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            </ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </ul>
         </li>
         <li class="nav-header">
             <i class="icon-custom icon-constant"></i> Constants
@@ -334,7 +364,38 @@
                                                                                                                                                                                 </table>
 
                     <h3><i class="icon-custom icon-method"></i> Methods</h3>
-                                                                <a id="method___construct"></a>
+                                                                <a id="method___call"></a>
+                        <div class="element clickable method public  method___call inherited" data-toggle="collapse" data-target=".method___call .collapse">
+                            <h2>Allows to set a value not yet implemented in the SDK but available in the API</h2>
+                            <pre>__call(String $name, Array $arguments) : mixed</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$name</h4>
+                                                <code>String</code><p><p>Name of the parameter to set</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$arguments</h4>
+                                                <code>Array</code><p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>mixed</code><p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method___construct"></a>
                         <div class="element clickable method public  method___construct inherited" data-toggle="collapse" data-target=".method___construct .collapse">
                             <h2>__construct</h2>
                             <pre>__construct() </pre>
@@ -361,9 +422,63 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_addConverter"></a>
+                        <div class="element clickable method public  method_addConverter inherited" data-toggle="collapse" data-target=".method_addConverter .collapse">
+                            <h2>Attach a api argument converter</h2>
+                            <pre>addConverter(\EasyTransac\Entities\EasyTransac\Converters\IConverter $converter) : \EasyTransac\Entities\Entity</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$converter</h4>
+                                                <code>\EasyTransac\Entities\EasyTransac\Converters\IConverter</code><p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code><a href="../classes/EasyTransac.Entities.Entity.html">\EasyTransac\Entities\Entity</a></code><p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_callConverters"></a>
+                        <div class="element clickable method public  method_callConverters inherited" data-toggle="collapse" data-target=".method_callConverters .collapse">
+                            <h2>Call all registred converters</h2>
+                            <pre>callConverters(Mixed $value) : Mixed</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$value</h4>
+                                                <code>Mixed</code><p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>Mixed</code><p></p>
                                                                     </div>
                             </div>
 
@@ -395,7 +510,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -429,7 +544,41 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
+
+                                    
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_getDateSent"></a>
+                        <div class="element clickable method public  method_getDateSent" data-toggle="collapse" data-target=".method_getDateSent .collapse">
+                            <h2>getDateSent</h2>
+                            <pre>getDateSent() </pre>
+                            <div class="labels">
+                                                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    
+                                                </th>
+                                                <td>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    
+                                                </th>
+                                                <td>
+                                                                                                    </td>
+                                            </tr>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -463,7 +612,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -497,7 +646,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -531,17 +680,17 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
                             </div>
 
                         </div>
-                                            <a id="method_getMailSent"></a>
-                        <div class="element clickable method public  method_getMailSent" data-toggle="collapse" data-target=".method_getMailSent .collapse">
-                            <h2>getMailSent</h2>
-                            <pre>getMailSent() </pre>
+                                            <a id="method_getOperationType"></a>
+                        <div class="element clickable method public  method_getOperationType" data-toggle="collapse" data-target=".method_getOperationType .collapse">
+                            <h2>getOperationType</h2>
+                            <pre>getOperationType() </pre>
                             <div class="labels">
                                                                                                                                                                                             </div>
 
@@ -565,7 +714,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -599,7 +748,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -633,7 +782,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -667,7 +816,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -701,7 +850,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -721,7 +870,7 @@
                                     <div class="long_description"></div>
 
                                     <table class="table">
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -759,7 +908,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -795,7 +944,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -838,7 +987,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                     </div>
@@ -872,7 +1021,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -911,7 +1060,46 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$date</h4>
+                                                <code></code><p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_setDateSent"></a>
+                        <div class="element clickable method public  method_setDateSent" data-toggle="collapse" data-target=".method_setDateSent .collapse">
+                            <h2>setDateSent</h2>
+                            <pre>setDateSent( $date) </pre>
+                            <div class="labels">
+                                                                                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    
+                                                </th>
+                                                <td>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    
+                                                </th>
+                                                <td>
+                                                                                                    </td>
+                                            </tr>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -950,7 +1138,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -989,7 +1177,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1028,7 +1216,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1040,10 +1228,10 @@
                             </div>
 
                         </div>
-                                            <a id="method_setMailSent"></a>
-                        <div class="element clickable method public  method_setMailSent" data-toggle="collapse" data-target=".method_setMailSent .collapse">
-                            <h2>setMailSent</h2>
-                            <pre>setMailSent( $mailSent) </pre>
+                                            <a id="method_setOperationType"></a>
+                        <div class="element clickable method public  method_setOperationType" data-toggle="collapse" data-target=".method_setOperationType .collapse">
+                            <h2>setOperationType</h2>
+                            <pre>setOperationType( $operationType) </pre>
                             <div class="labels">
                                                                                                                                                                                             </div>
 
@@ -1067,11 +1255,11 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
-                                                <h4>$mailSent</h4>
+                                                <h4>$operationType</h4>
                                                 <code></code><p></p>
                                             </div>
                                                                             
@@ -1106,7 +1294,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1145,7 +1333,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1184,7 +1372,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1223,7 +1411,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                                                             <h3>Arguments</h3>
                                                                                     <div class="subelement argument">
@@ -1255,7 +1443,7 @@
                                                 <td>
                                                                                                     </td>
                                             </tr>
-                                                                            </table>
+                                                                                                                    </table>
 
                                     
                                                                             <h3>Response</h3>
@@ -1284,6 +1472,39 @@
                                                     </th>
                                                     <td>
                                                                                                                     <p>:RequestId *</p>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property_operationType"> </a>
+                            <div class="element clickable property  protected property_operationType" data-toggle="collapse" data-target=".property_operationType .collapse">
+                                <h2>operationType</h2>
+                                <pre>operationType : </pre>
+                                <div class="labels">
+                                                                                                        </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        map
+                                                    </th>
+                                                    <td>
+                                                                                                                    <p>:OperationType *</p>
                                                                                                             </td>
                                                 </tr>
                                                                                             <tr>
@@ -1350,6 +1571,39 @@
                                                     </th>
                                                     <td>
                                                                                                                     <p>:Date *</p>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property_dateSent"> </a>
+                            <div class="element clickable property  protected property_dateSent" data-toggle="collapse" data-target=".property_dateSent .collapse">
+                                <h2>dateSent</h2>
+                                <pre>dateSent : </pre>
+                                <div class="labels">
+                                                                                                        </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        map
+                                                    </th>
+                                                    <td>
+                                                                                                                    <p>:DateSent *</p>
                                                                                                             </td>
                                                 </tr>
                                                                                             <tr>
@@ -1498,39 +1752,6 @@
                                                                             </div>
                                 </div>
                             </div>
-                                                    <a id="property_mailSent"> </a>
-                            <div class="element clickable property  protected property_mailSent" data-toggle="collapse" data-target=".property_mailSent .collapse">
-                                <h2>mailSent</h2>
-                                <pre>mailSent : </pre>
-                                <div class="labels">
-                                                                                                        </div>
-                                <div class="row collapse">
-                                    <div class="detail-description">
-                                        <div class="long_description"></div>
-
-                                        <table class="table">
-                                                                                            <tr>
-                                                    <th>
-                                                        map
-                                                    </th>
-                                                    <td>
-                                                                                                                    <p>:MailSent *</p>
-                                                                                                            </td>
-                                                </tr>
-                                                                                            <tr>
-                                                    <th>
-                                                        
-                                                    </th>
-                                                    <td>
-                                                                                                            </td>
-                                                </tr>
-                                                                                    </table>
-
-                                                                                    <h3>Type(s)</h3>
-                                            <code></code>
-                                                                            </div>
-                                </div>
-                            </div>
                                                     <a id="property_email"> </a>
                             <div class="element clickable property  protected property_email" data-toggle="collapse" data-target=".property_email .collapse">
                                 <h2>email</h2>
@@ -1622,6 +1843,56 @@
                                                                             </div>
                                 </div>
                             </div>
+                                                    <a id="property_additionalFields"> </a>
+                            <div class="element clickable property  protected property_additionalFields inherited" data-toggle="collapse" data-target=".property_additionalFields .collapse">
+                                <h2>additionalFields</h2>
+                                <pre>additionalFields : </pre>
+                                <div class="labels">
+                                    <span class="label">inherited</span>                                                                    </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property_converters"> </a>
+                            <div class="element clickable property  protected property_converters inherited" data-toggle="collapse" data-target=".property_converters .collapse">
+                                <h2>converters</h2>
+                                <pre>converters : </pre>
+                                <div class="labels">
+                                    <span class="label">inherited</span>                                                                    </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
                                                             </div>
             </div>
             <a id="\EasyTransac\Entities\PaymentPageInfos"></a>
@@ -1642,7 +1913,7 @@
             Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by
             <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
             Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and<br/>
-            generated on Mon, 12 Dec 2016 16:40:46 +0100.<br/>
+            generated on Tue, 25 Jun 2019 13:16:10 +0000.<br/>
     </footer>
     </body>
 </html>

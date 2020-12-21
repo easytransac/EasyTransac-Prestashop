@@ -11,7 +11,7 @@ use \EasyTransac\Entities\Entity;
  */
 class AddCreditCard extends Request
 {
-    /** @object:CreditCardsList **/
+    /** @object:CreditCard **/
     protected $response;
 
     /**
@@ -21,7 +21,7 @@ class AddCreditCard extends Request
      */
     public function execute(Entity $entity)
     {
-        return parent::call('/payment/addcard', $entity);
+        return $this->call('/payment/addcard', $entity);
     }
 }
 

@@ -11,14 +11,16 @@ class PaymentPageInfos extends Entity
 {
     /** @map:RequestId **/
     protected $requestId = null;
+	/** @map:OperationType **/
+	protected $operationType = null;
     /** @map:Status **/
     protected $status = null;
     /** @map:Date **/
     protected $date = null;
+	/** @map:DateSent **/
+	protected $dateSent = null;
     /** @map:Amount **/
     protected $amount = null;
-    /** @map:FixFees **/
-    protected $fixFees = null;
     /** @map:3DSecure **/
     protected $secure = null;
     /** @map:PageUrl **/
@@ -28,26 +30,19 @@ class PaymentPageInfos extends Entity
     /** @map:Language **/
     protected $language = null;
 
-    public function setRequestId($value)
-    {
-        $this->requestId = $value;
-        return $this;
-    }
-
     public function getRequestId()
     {
         return $this->requestId;
     }
 
+	public function getOperationType()
+	{
+		return $this->operationType;
+	}
+
     public function getStatus()
     {
         return $this->status;
-    }
-
-    public function setStatus($status)
-    {
-        $this->status = $status;
-        return $this;
     }
 
     public function getDate()
@@ -55,32 +50,14 @@ class PaymentPageInfos extends Entity
         return $this->date;
     }
 
-    public function setDate($date)
-    {
-        $this->date = $date;
-        return $this;
-    }
+	public function getDateSent()
+	{
+		return $this->dateSent;
+	}
 
     public function getAmount()
     {
         return $this->amount;
-    }
-
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-        return $this;
-    }
-
-    public function getFixFees()
-    {
-        return $this->fixFees;
-    }
-
-    public function setFixFees($fixFees)
-    {
-        $this->fixFees = $fixFees;
-        return $this;
     }
 
     public function getSecure()
@@ -88,21 +65,9 @@ class PaymentPageInfos extends Entity
         return $this->secure;
     }
 
-    public function setSecure($secure)
-    {
-        $this->secure = $secure;
-        return $this;
-    }
-
     public function getPageUrl()
     {
         return $this->pageUrl;
-    }
-
-    public function setPageUrl($pageUrl)
-    {
-        $this->pageUrl = $pageUrl;
-        return $this;
     }
 
     public function getEmail()
@@ -110,23 +75,10 @@ class PaymentPageInfos extends Entity
         return $this->email;
     }
 
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
     public function getLanguage()
     {
         return $this->language;
     }
-
-    public function setLanguage($language)
-    {
-        $this->language = $language;
-        return $this;
-    }
-
 }
 
 ?>
