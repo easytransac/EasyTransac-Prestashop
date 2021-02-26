@@ -25,7 +25,7 @@ class EasyTransac extends PaymentModule
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.1.0';
+        $this->version = '3.2.0';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
