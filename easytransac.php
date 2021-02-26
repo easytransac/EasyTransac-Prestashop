@@ -3,7 +3,7 @@
 require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 /*
- * EasyTransac's official payment method Prestashop module.
+ * EasyTransac's official Prestashop payment method.
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
@@ -13,12 +13,19 @@ if (!defined('_PS_VERSION_'))
 
 class EasyTransac extends PaymentModule
 {
+    /**
+     * Development variable.
+     */
+    private $debugLogEnabled = false;
 
+    /**
+     * Module init.
+     */
     public function __construct()
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.0.5';
+        $this->version = '3.1.0';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
@@ -30,7 +37,7 @@ class EasyTransac extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->l('EasyTransac');
+        $this->displayName = $this->l('Credit card payment via EasyTransac');
         $this->description = $this->l('Website payment service');
 
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
@@ -39,6 +46,10 @@ class EasyTransac extends PaymentModule
             $this->warning = $this->l('No API key provided');
     }
 
+    /**
+     * EasyTransac log init with conditional configuration.
+     * @return void
+     */
     public function loginit()
     {
         EasyTransac\Core\Logger::getInstance()->setActive(Configuration::get('EASYTRANSAC_DEBUG'));
@@ -51,10 +62,16 @@ class EasyTransac extends PaymentModule
      */
     public function install()
     {
-        if (!parent::install() || !$this->registerHook('paymentOptions') || !$this->registerHook('paymentReturn'))
+        if (!parent::install() || 
+            !$this->registerHook('paymentOptions') || 
+            !$this->registerHook('paymentReturn') || 
+            !$this->registerHook('actionFrontControllerSetMedia') ||
+            !$this->registerHook('actionOrderSlipAdd')
+        ){
             return false;
+        }
         include_once(_PS_MODULE_DIR_ . $this->name . '/easytransac_install.php');
-        unlink(_PS_CACHE_DIR_ . 'class_index.php');
+        // unlink(_PS_CACHE_DIR_ . 'class_index.php');
         $easytransac_install = new EasyTransacInstall();
         $easytransac_install->updateConfiguration();
         $easytransac_install->createTables();
@@ -79,6 +96,7 @@ class EasyTransac extends PaymentModule
 
     /**
      * Settings page.
+     * @return string
      */
     public function getContent()
     {
@@ -112,6 +130,14 @@ class EasyTransac extends PaymentModule
             } else {
                 Configuration::updateValue('EASYTRANSAC_ONECLICK', 1);
             }
+
+            $enable_icon= strval(Tools::getValue('EASYTRANSAC_ICONDISPLAY'));
+            if (empty($enable_icon)) {
+                Configuration::updateValue('EASYTRANSAC_ICONDISPLAY', 0);
+            } else {
+                Configuration::updateValue('EASYTRANSAC_ICONDISPLAY', 1);
+            }
+
             $output .= $this->displayConfirmation($this->l('Settings updated'));
         }
 
@@ -119,7 +145,29 @@ class EasyTransac extends PaymentModule
     }
 
     /**
+     * Get the latest version number of Prestashop 1.7 EasyTransac module.
+     */
+    public static function getLatestVersion(){
+        $uri = 'https://easytransac.com/files/prestashop1.7_module_version.txt';
+        $streamContext = stream_context_create(
+            array('http'=>
+                array(
+                    'timeout' => 4,  //120 seconds
+                )
+            )
+        );
+        
+        //Pass this stream context to file_get_contents via the third parameter.
+        try {
+            return file_get_contents($uri, false, $streamContext);
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    /**
      * Settings form.
+     * @return string
      */
     public function displayForm()
     {
@@ -132,15 +180,32 @@ class EasyTransac extends PaymentModule
         $curl_activated = function_exists('curl_version');
 
         if ($openssl_version_supported) {
-            $requirements_message = '<div class="alert-success" style="padding:5px;">' . $this->l('[OK] OpenSSL version') . ' "' . OPENSSL_VERSION_TEXT . '" >= 1.0.1' . '</div>';
+            $info =  sprintf('%s "%s" >= 1.0.1', $this->l('[OK] OpenSSL version'), OPENSSL_VERSION_TEXT);
+            $requirements_message = sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
+            $info);
         } else {
-            $requirements_message = '<div class="alert-danger" style="padding:5px;">' . $this->l('[ERROR] OpenSSL version not supported') . ' "' . OPENSSL_VERSION_TEXT . '" < 1.0.1</div>';
+            $info =  sprintf('%s "%s" < 1.0.1', $this->l('[ERROR] OpenSSL version not supported'), OPENSSL_VERSION_TEXT);
+            $requirements_message = '<div class="alert-danger" style="padding:5px;">' . $info . '" < 1.0.1</div>';
         }
 
         if ($curl_activated) {
-            $requirements_message .= '<div class="alert-success" style="padding:5px;">' . $this->l('[OK] cURL is installed') . '</div>';
+            $requirements_message .= sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
+                                             $this->l('[OK] cURL is installed'));
         } else {
-            $requirements_message .= '<div class="alert-danger" style="padding:5px;">' . $this->l('[ERROR] PHP cURL extension missing') . '</div>';
+            $requirements_message .= sprintf('<div class="alert-danger" style="padding:5px;">%s</div>',
+                                             $this->l('[ERROR] PHP cURL extension missing'));
+        }
+
+        $latestVersion = self::getLatestVersion();
+        if (!empty($latestVersion)) {
+            $isActualVersion = $latestVersion === $this->version;
+            if($isActualVersion){
+                $requirements_message .= sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
+                                                 $this->l('[OK] Latest module version installed'));
+            } else {
+                $requirements_message .= sprintf('<div class="alert-danger" style="padding:5px;">%s : %s</div>',
+                                                 $this->l('[ERROR] New module is available on www.easytransac.com'), $latestVersion);
+            }
         }
 
         // Init Fields form array
@@ -171,7 +236,7 @@ class EasyTransac extends PaymentModule
                 ),
                 array(
                     'type' => 'radio',
-                    'label' => 'One Click Payment',
+                    'label' => $this->l('One Click Payment'),
                     'name' => 'EASYTRANSAC_ONECLICK',
                     'size' => 20,
                     'is_bool' => true,
@@ -192,6 +257,25 @@ class EasyTransac extends PaymentModule
                     'type' => 'radio',
                     'label' => 'Debug Mode',
                     'name' => 'EASYTRANSAC_DEBUG',
+                    'size' => 20,
+                    'is_bool' => true,
+                    'values' => array(// $values contains the data itself.
+                        array(
+                            'id' => 'active2_on', // The content of the 'id' attribute of the <input> tag, and of the 'for' attribute for the <label> tag.
+                            'value' => 1, // The content of the 'value' attribute of the <input> tag.
+                            'label' => $this->l('Enabled')   // The <label> for this radio button.
+                        ),
+                        array(
+                            'id' => 'active2_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled')
+                        )
+                    ),
+                ),
+                array(
+                    'type' => 'radio',
+                    'label' => 'Icon display',
+                    'name' => 'EASYTRANSAC_ICONDISPLAY',
                     'size' => 20,
                     'is_bool' => true,
                     'values' => array(// $values contains the data itself.
@@ -275,6 +359,7 @@ class EasyTransac extends PaymentModule
         // Load current value
         $helper->fields_value['EASYTRANSAC_ONECLICK'] = Configuration::get('EASYTRANSAC_ONECLICK');
         $helper->fields_value['EASYTRANSAC_DEBUG'] = Configuration::get('EASYTRANSAC_DEBUG');
+        $helper->fields_value['EASYTRANSAC_ICONDISPLAY'] = Configuration::get('EASYTRANSAC_ICONDISPLAY');
         $helper->fields_value['EASYTRANSAC_API_KEY'] = Configuration::get('EASYTRANSAC_API_KEY');
         $helper->fields_value['EASYTRANSAC_3DSECURE'] = Configuration::get('EASYTRANSAC_3DSECURE');
         $helper->fields_value['EASYTRANSAC_NOTIFICATION_URL'] = Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/notification';
@@ -296,8 +381,11 @@ class EasyTransac extends PaymentModule
         $newOption = new PaymentOption();
         // $paymentForm = $this->fetch('module:easytransac/views/templates/hook/checkout_payment.tpl');
         $newOption->setCallToActionText($this->l('Pay by EasyTransac'))
-        ->setLogo(_MODULE_DIR_ . 'easytransac/logo.png')
-        ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+                  ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
+
+        if(Configuration::get('EASYTRANSAC_ICONDISPLAY')){
+            $newOption->setLogo(_MODULE_DIR_ . 'easytransac/views/img/icon.png');
+        }
         
         EasyTransac\Core\Logger::getInstance()->write($this->context->customer);
         if (Configuration::get('EASYTRANSAC_ONECLICK') && $this->context->customer->getClient_id() != null)
@@ -343,7 +431,7 @@ class EasyTransac extends PaymentModule
 
         $existing_order = !empty($_GET['id_order']) ? new Order($_GET['id_order']) : null;
 
-        if (empty($existing_order->id) || empty($existing_order->current_state) || $this->isLocked($existing_order->id))
+        if (empty($existing_order->id) || empty($existing_order->current_state))
             $existing_order->current_state = $et_pending;
 
         // 2: payment accepted, 6: canceled, 7: refunded, 8: payment error, 12: remote payment accepted
@@ -352,7 +440,7 @@ class EasyTransac extends PaymentModule
             'isCanceled' => (int)$existing_order->current_state === 6 || (int)$existing_order->current_state === 8,
             'isAccepted' => (int)$existing_order->current_state === 2,
         ));
-
+        $this->debugLog('TPL', 'Calling confirmation tpl');
         return $this->fetch('module:easytransac/views/templates/hook/confirmation.tpl');
     }
 
@@ -367,40 +455,6 @@ class EasyTransac extends PaymentModule
             else
                 parent::validateOrder((int)$id_cart, (int)$id_order_state, (float)$amount_paid, $payment_method, $message, $transaction, $currency_special, $dont_touch_amount, $secure_key, $shop);
         }
-    }
-
-    /**
-     * Locks an order.
-     * @param in $id
-     */
-    public function lock($id)
-    {
-        $path = __DIR__ . '/EasyTransac-Processing-' . $id;
-
-        if (is_writable(__DIR__))
-            touch($path);
-    }
-
-    /**
-     * Check if an order is locked.
-     * @param int $id
-     * @return bool
-     */
-    public function isLocked($id)
-    {
-        $path = __DIR__ . '/EasyTransac-Processing-' . $id;
-        return file_exists($path);
-    }
-
-    /**
-     * Unlocks an order.
-     * @param int $id
-     */
-    public function unlock($id)
-    {
-        $path = __DIR__ . '/EasyTransac-Processing-' . $id;
-        if (file_exists($path) && is_writable(__DIR__))
-            unlink($path);
     }
 
     /**
@@ -436,4 +490,117 @@ class EasyTransac extends PaymentModule
         }
     }
 
+    /**
+    * Order transaction refund.
+    */
+    public function hookActionOrderSlipAdd($params){
+
+        $this->loginit();
+		EasyTransac\Core\Logger::getInstance()->write('Start Refund');
+        $api_key = Configuration::get('EASYTRANSAC_API_KEY');
+        EasyTransac\Core\Services::getInstance()->provideAPIKey($api_key);
+
+        EasyTransac\Core\Logger::getInstance()->write(__FUNCTION__.' '. is_object($params['order']));
+        EasyTransac\Core\Logger::getInstance()->write('is partialRefund'.' '.  Tools::isSubmit('partialRefund'));
+        EasyTransac\Core\Logger::getInstance()->write('is partialRefundProduct '. 
+                        Tools::isSubmit('partialRefundProduct'));
+        EasyTransac\Core\Logger::getInstance()->write('is partialRefund value '. 
+                        json_encode(Tools::getValue('partialRefundProduct')));
+
+        $products = $params['order']->getProducts(true);
+        
+        foreach ($products as $key => $item) {
+            EasyTransac\Core\Logger::getInstance()->write('product amount '.  $item->amount);
+            EasyTransac\Core\Logger::getInstance()->write('product map '.  json_encode($item));
+        }
+
+        $items = $params['order']->getOrderSlipsCollection()->getResults();
+        $total_refund_amount = 0;
+
+        foreach ($items as $key => $item) {
+            EasyTransac\Core\Logger::getInstance()->write('refund amount for item '.  $item->amount);
+            $total_refund_amount += $item->amount;
+        }
+
+        if($total_refund_amount > 0){
+            $logMsg = json_encode(print_r($params['order'], true));
+            EasyTransac\Core\Logger::getInstance()->write($logMsg);
+            EasyTransac\Core\Logger::getInstance()->write('ID cart : '.$params['order']->id_cart);
+            if( ! ($transactionId = $this->getTransactionId($params['order']->id_cart))){
+                $errorMsg = 'EasyTransac exception: not Tid for cart id: '.$params['order']->id_cart;
+                error_log($errorMsg);
+                EasyTransac\Core\Logger::getInstance()->write($errorMsg);
+                throw new Exception ($errorMsg);
+                return;
+            }
+        }
+
+        EasyTransac\Core\Logger::getInstance()->write('Transaction id found', $transactionId);
+
+        // $notif_url 	= Tools::getShopDomainSsl(true, true).__PS_BASE_URI__
+        //             .'module/easytransac/notification';
+
+        # Fixing PHP's floating point issue.
+        $total_to_refund = 100 * $total_refund_amount;
+        $total_to_refund = intval(strval($total_to_refund));
+
+        try {
+            $refund = (new \EasyTransac\Entities\Refund)
+                        ->setTid($transactionId)
+                        ->setAmount($total_to_refund);
+            $request = (new EasyTransac\Requests\PaymentRefund);
+            $response = $request->execute($refund);
+
+            if (empty($response)) {
+                EasyTransac\Core\Logger::getInstance()->write('EasyTransac Refund', 'empty response.');
+            }
+            else if (!$response->isSuccess()) {
+                throw new Exception ($response->getErrorMessage());
+            }
+            else if ($response->isSuccess()) {
+                EasyTransac\Core\Logger::getInstance()->write('EasyTransac Refund', 'success');
+            }
+        }
+        catch (Exception $exc) {
+            error_log('EasyTransac Refund Exception: ' . $exc->getMessage());
+        }
+    }
+
+    /**
+     * Return the transaction id for an order.
+     */
+    function getTransactionId($order_id)
+	{
+        if($this->debugLogEnabled){
+            $a = Db::getInstance()->ExecuteS('SELECT * FROM `' . _DB_PREFIX_ 
+                                             . 'easytransac_transaction`');
+            EasyTransac\Core\Logger::getInstance()->write('easytransac debug list all: '. json_encode($a));
+        }
+
+		$sql = 'SELECT external_id FROM `' . _DB_PREFIX_ . 'easytransac_transaction` '
+				. ' WHERE id_order = \'' . intval($order_id) . '\'';
+		return Db::getInstance()->getValue($sql);
+	}
+
+    /**
+     * Save the transaction id.
+     */
+	function setTransactionId($order_id, $transaction_id)
+	{
+		Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_transaction` '
+				. ' VALUES(' . intval($order_id) . ',\'' . $transaction_id . '\')');
+	}
+
+	public function debugLog($title, $data){
+
+        if(!is_string($data))
+            $data = json_encode($data);
+
+        if(!is_string($title))
+            $title = json_encode($title);
+
+        $message = sprintf('%s : %s', $title, $data);
+		EasyTransac\Core\Logger::getInstance()->write($message);
+
+    }
 }

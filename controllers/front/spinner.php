@@ -11,12 +11,12 @@ class EasyTransacSpinnerModuleFrontController extends ModuleFrontController
 	public function initContent()
 	{
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write('Start Spinner');
+		$this->module->debugLog('Start Spinner');
 		
 		parent::initContent();
-		EasyTransac\Core\Logger::getInstance()->write('Spinner context cookie cart: ' . $this->context->cookie->cart_id);
+		$this->module->debugLog('Spinner context cookie cart: ' . $this->context->cookie->cart_id);
 		$existing_order_id = OrderCore::getOrderByCartId($this->context->cookie->cart_id);
-		EasyTransac\Core\Logger::getInstance()->write('Spinner context order id: ' . $existing_order_id);
+		$this->module->debugLog('Spinner context order id: ' . $existing_order_id);
 
 		$existing_order = new Order($existing_order_id);
 

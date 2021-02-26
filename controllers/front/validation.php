@@ -9,10 +9,10 @@ class EasyTransacValidationModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write('Start Validation');
-		EasyTransac\Core\Logger::getInstance()->write("\n\n" . var_export($_POST, true), FILE_APPEND);
+		$this->module->debugLog('Start Validation');
+		$this->module->debugLog("\n\n" . var_export($_POST, true), FILE_APPEND);
 
-		EasyTransac\Core\Logger::getInstance()->write('Validation order cart id : ' . $this->context->cookie->order_id);
+		$this->module->debugLog('Validation order cart id : ' . $this->context->cookie->order_id);
 		$cart = new Cart($this->context->cookie->cart_id);
 
 		if (empty($cart->id))
@@ -25,8 +25,8 @@ class EasyTransacValidationModuleFrontController extends ModuleFrontController
 
 		$existing_order = new Order($existing_order_id);
 
-		EasyTransac\Core\Logger::getInstance()->write('Validation order id from cart : ' . $existing_order_id);
-		EasyTransac\Core\Logger::getInstance()->write('Validation customer : ' . $existing_order->id_customer);
+		$this->module->debugLog('Validation order id from cart : ' . $existing_order_id);
+		$this->module->debugLog('Validation customer : ' . $existing_order->id_customer);
 
 		$this->module->create_easytransac_order_state();
 
@@ -34,7 +34,7 @@ class EasyTransacValidationModuleFrontController extends ModuleFrontController
 		 * Version 2.1 : spinner forced, update via notification only.
 		 */
 		// HTTP Only
-		EasyTransac\Core\Logger::getInstance()->write('Validation redirect');
+		$this->module->debugLog('Validation redirect');
 		// Redirect to validation page.
 		if (empty($existing_order->id) || empty($existing_order->current_state))
 		{

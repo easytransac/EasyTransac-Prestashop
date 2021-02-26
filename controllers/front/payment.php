@@ -22,7 +22,7 @@ class EasyTransacPaymentModuleFrontController extends ModuleFrontController
 		$total = 100 * $cart->getOrderTotal(true, Cart::BOTH);
 		$langcode = $this->context->language->iso_code == 'fr' ? 'FRE' : 'ENG';
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write('Start Payment Page Request');
+		$this->module->debugLog('Start Payment Page Request');
 		EasyTransac\Core\Services::getInstance()->provideAPIKey($api_key);
 
 		// Replaces "+" with "00" since there is no calling code field
@@ -82,29 +82,21 @@ class EasyTransacPaymentModuleFrontController extends ModuleFrontController
 		}
 		catch (Exception $exc)
 		{
-			EasyTransac\Core\Logger::getInstance()->write('Payment Exception: ' . $exc->getMessage());
-		}
-
-
-		if (!$response->isSuccess())
-		{
-			EasyTransac\Core\Logger::getInstance()->write('Payment Page Request error: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage());
+			$this->module->debugLog('Payment Exception: ' . $exc->getMessage());
 		}
 
 		// Store cart_id in session
+		$this->module->create_easytransac_order_state();
 		$this->context->cookie->cart_id = $this->context->cart->id;
-
 		$this->context->cookie->order_total = $cart->getOrderTotal(true, Cart::BOTH);
 
-		$this->context->smarty->assign(array(
-			'nbProducts' => $cart->nbProducts(),
-			'total' => $cart->getOrderTotal(true, Cart::BOTH),
-			'payment_page_url' => $response->isSuccess() ? $response->getContent()->getPageUrl() : false,
-		));
-
-		$this->module->create_easytransac_order_state();
-
-		$this->setTemplate('module:easytransac/views/templates/front/payment_execution.tpl');	
+		if (!$response->isSuccess())
+		{
+			$this->module->debugLog('Payment Page Request error: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage());
+			throw new Exception('Please check your EasyTransac configuration.');
+		} else {
+			header('Location: '.$response->getContent()->getPageUrl());
+			exit;
+		}
 	}
-
 }

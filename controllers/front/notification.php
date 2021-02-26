@@ -12,8 +12,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write('Start Notification');
-		EasyTransac\Core\Logger::getInstance()->write("\n\n" . var_export($_POST, true), FILE_APPEND);
+		$this->module->debugLog('Start Notification');
+		$this->module->debugLog('Data', var_export($_POST, true));
 		try
 		{
 			$response = \EasyTransac\Core\PaymentNotification::getContent($_POST, Configuration::get('EASYTRANSAC_API_KEY'));
@@ -23,40 +23,18 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 		catch (Exception $exc)
 		{
-			EasyTransac\Core\Logger::getInstance()->write('Notification error : ' . $exc->getMessage());
+			$this->module->debugLog('Notification error', $exc->getMessage());
 			error_log('EasyTransac error: ' . $exc->getMessage());
 			die;
 		}
 
-		// Lock so that validation don't interfere
-		if ($this->module->isLocked($response->getOrderId()))
-		{
-			EasyTransac\Core\Logger::getInstance()->write('Notification lock loop : ' . $response->getOrderId());
-
-			// Wait loop (max 10s) to let the validation finish
-			$max = 10;
-			$i = 0;
-			while ($i < $max)
-			{
-				sleep(1);
-				if (!$this->module->isLocked($response->getOrderId()))
-					break;
-				$i++;
-			}
-		}
-		// Lock
-		$this->module->lock($response->getOrderId());
-
-		EasyTransac\Core\Logger::getInstance()->write('Notification locked : ' . $response->getOrderId());
-
+		$this->module->debugLog('Notification for Tid', $response->getTid());
 		$this->module->create_easytransac_order_state();
-
 		$cart = new Cart($response->getOrderId());
 
 		if (empty($cart->id))
 		{
 			Logger::AddLog('EasyTransac: Unknown Cart id');
-			$this->module->unlock($response->getOrderId());
 			die;
 		}
 		$customer = new Customer($cart->id_customer);
@@ -64,13 +42,14 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$existing_order_id = OrderCore::getOrderByCartId($response->getOrderId());
 		$existing_order = new Order($existing_order_id);
 
-		EasyTransac\Core\Logger::getInstance()->write('Notification cart id : ' . $response->getOrderId());
-		EasyTransac\Core\Logger::getInstance()->write('Notification order id from cart : ' . $existing_order_id);
-		EasyTransac\Core\Logger::getInstance()->write('Notification customer : ' . $existing_order->id_customer);
-		EasyTransac\Core\Logger::getInstance()->write('Notification client ID : ' . $response->getClient()->getId());
-
+		$this->module->debugLog('Notification cart id', $response->getOrderId());
+		$this->module->debugLog('Notification order id from cart', $existing_order_id);
+		$this->module->debugLog('Notification customer', $existing_order->id_customer);
+		$this->module->debugLog('Notification client ID', $response->getClient()->getId());
+		$this->module->debugLog('save tid - orderId', $response->getOrderId().' - '.$response->getTid());
+		
+		$this->module->setTransactionId($response->getOrderId(), $response->getTid());
 		$payment_status = null;
-
 		$payment_message = $response->getMessage();
 
 		// 2: payment accepted, 6: canceled, 7: refunded, 8: payment error
@@ -95,32 +74,32 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				break;
 		}
 
-		EasyTransac\Core\Logger::getInstance()->write('Notification for OrderId : ' . $response->getOrderId() . ', Status: ' . $response->getStatus() . ', Prestashop Status: ' . $payment_status);
+		$this->module->debugLog('Notification for OrderId : ' . $response->getOrderId() . ', Status: ' . $response->getStatus() . ', Prestashop Status: ' . $payment_status);
 
 		// Checks that paid amount matches cart total.
 		$paid_total = number_format($response->getAmount(), 2, '.', '');
 		$cart_total = number_format($cart->getOrderTotal(true, Cart::BOTH), 2, '.', '');
 		$amount_match = $paid_total === $cart_total;
 
-		EasyTransac\Core\Logger::getInstance()->write('Notification Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
+		$this->module->debugLog('Notification Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
 
 		// Useful if amount doesn't match and it's an update
 		$original_new_state = $payment_status;
 
 		if (!$amount_match && 2 == $payment_status)
 		{
-			$payment_message = $this->module->l('Price paid on EasyTransac is not the same that on Prestashop - Transaction : ') . $response->getTid();
+			$payment_message = $this->l('Price paid on EasyTransac is not the same that on Prestashop - Transaction : ') . $response->getTid();
 			$payment_status = 8;
-			EasyTransac\Core\Logger::getInstance()->write('Notification Amount mismatch');
+			$this->module->debugLog('Notification Amount mismatch');
 		}
 
 		if (empty($existing_order->id) || empty($existing_order->current_state))
 		{
 			$total_paid_float = (float) $paid_total;
-			EasyTransac\Core\Logger::getInstance()->write('Notification Total paid float: ' . $total_paid_float);
-			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $mailVars = array(), null, false, $customer->secure_key);
-			EasyTransac\Core\Logger::getInstance()->write('Notification Order validated');
-			$this->module->unlock($response->getOrderId());
+			$this->module->debugLog('Notification Total paid float: ' . $total_paid_float);
+			$extra_vars = ['transaction_id' => $response->getTid()];
+			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $extra_vars, null, false, $customer->secure_key);
+			$this->module->debugLog('Notification Order validated');
 			die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 		}
 
@@ -139,16 +118,15 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				$msg->id_order = intval($existing_order->id);
 				$msg->private = 1;
 				$msg->add();
+				$this->module->debugLog('message added', $message);
 			}
-			EasyTransac\Core\Logger::getInstance()->write('Notification : order state changed to : ' . $payment_status);
+			$this->module->debugLog('Notification : order state changed to', $payment_status);
 		}
 		else
 		{
-			EasyTransac\Core\Logger::getInstance()->write('Notification : invalid target state or same state as: ' . $payment_status);
+			$this->module->debugLog('Notification : invalid target state or same state as', $payment_status);
 		}
-		EasyTransac\Core\Logger::getInstance()->write('Notification End of Script');
-		$this->module->unlock($response->getOrderId());
-		EasyTransac\Core\Logger::getInstance()->write('Notification unlocked : ' . $response->getOrderId());
+		$this->module->debugLog('Notification End of Script');
 		die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 	}
 

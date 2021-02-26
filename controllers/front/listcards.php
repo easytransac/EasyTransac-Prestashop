@@ -18,7 +18,7 @@ class EasyTransacListcardsModuleFrontController extends ModuleFrontController
 			die(json_encode(array('status' => 0)));
 		
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write($this->context->customer->getClient_id());
+		$this->module->debugLog($this->context->customer->getClient_id());
 		EasyTransac\Core\Services::getInstance()->provideAPIKey(Configuration::get('EASYTRANSAC_API_KEY'));
 		$clientId = $this->context->customer->getClient_id();
 		if (empty($clientId))
@@ -41,13 +41,13 @@ class EasyTransacListcardsModuleFrontController extends ModuleFrontController
 				$buffer[] = array('Alias' => $cc->getAlias(), 'CardNumber' => $cc->getNumber(), "CardYear" => $year, "CardMonth" => $cc->getMonth());
 			}
 			$output = array('status' => !empty($buffer), 'packet' => $buffer);
-			EasyTransac\Core\Logger::getInstance()->write($output);
+			$this->module->debugLog($output);
 			echo json_encode($output);
 			die;
 		}
 		else
 		{
-			EasyTransac\Core\Logger::getInstance()->write('List Cards Error: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage());
+			$this->module->debugLog('List Cards Error: ' . $response->getErrorCode() . ' - ' . $response->getErrorMessage());
 		}
 		die(json_encode(array('status' => 0)));
 	}

@@ -42,6 +42,14 @@ class EasyTransacInstall
 			ALTER TABLE `'._DB_PREFIX_.'easytransac_customer` ADD KEY `easytransac_client_id` (`client_id`);')) {
             return false;
         }
+		if (!Db::getInstance()->Execute('
+		CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'easytransac_transaction` (
+			`id_order` int(10) unsigned NOT NULL,
+			`external_id` VARCHAR(16) NOT NULL,
+			PRIMARY KEY (`id_order`)
+		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')) {
+            return false;
+        }
     }
 	
 	/**
@@ -50,5 +58,7 @@ class EasyTransacInstall
 	public function deleteTables()
 	{
 		Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_customer`;');
+		Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_transaction`;');
+
 	}
 }

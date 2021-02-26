@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "b8b2fd6faa1e61cc07cd06a05f0eb849",
     "packages": [
         {
             "name": "easytransac/easytransac-sdk-php",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/easytransac/easytransac-sdk-php.git",
-                "reference": "28f435a6369c50645f24aa4b9897a1baeb2da8d5"
+                "reference": "b5992f699f9865a238027865eae67e1a5ae023a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/easytransac/easytransac-sdk-php/zipball/28f435a6369c50645f24aa4b9897a1baeb2da8d5",
-                "reference": "28f435a6369c50645f24aa4b9897a1baeb2da8d5",
+                "url": "https://api.github.com/repos/easytransac/easytransac-sdk-php/zipball/b5992f699f9865a238027865eae67e1a5ae023a8",
+                "reference": "b5992f699f9865a238027865eae67e1a5ae023a8",
                 "shasum": ""
             },
             "require": {
@@ -31,7 +31,11 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "description": "A SDK to make payment with the EasyTransac API",
-            "time": "2020-11-04T15:38:27+00:00"
+            "support": {
+                "issues": "https://github.com/easytransac/easytransac-sdk-php/issues",
+                "source": "https://github.com/easytransac/easytransac-sdk-php/tree/1.2.1"
+            },
+            "time": "2020-12-07T09:28:26+00:00"
         }
     ],
     "packages-dev": [],
@@ -41,5 +45,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

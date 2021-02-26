@@ -12,9 +12,9 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 	public function postProcess()
 	{
 		$this->module->loginit();
-		EasyTransac\Core\Logger::getInstance()->write('Start Oneclick');
+		$this->module->debugLog('Start Oneclick');
 		
-		EasyTransac\Core\Logger::getInstance()->write($this->context->cart->getOrderTotal(true, Cart::BOTH));
+		$this->module->debugLog($this->context->cart->getOrderTotal(true, Cart::BOTH));
 		if (!$this->context->customer->id || empty($_POST['Alias']) || !$this->context->cart->id)
 			die;
 
@@ -60,7 +60,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 		$existing_order_id = OrderCore::getOrderByCartId($doneTransaction->getOrderId());
 		$existing_order = new Order($existing_order_id);
 
-		EasyTransac\Core\Logger::getInstance()->write('OneClick customer : ' . $existing_order->id_customer);
+		$this->module->debugLog('OneClick customer : ' . $existing_order->id_customer);
 
 		$payment_status = null;
 
@@ -98,7 +98,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				break;
 		}
 
-		EasyTransac\Core\Logger::getInstance()->write('OneClick for OrderId : ' . $doneTransaction->getOrderId() . ', Status: ' . $doneTransaction->getStatus() . ', Prestashop Status: ' . $payment_status);
+		$this->module->debugLog('OneClick for OrderId : ' . $doneTransaction->getOrderId() . ', Status: ' . $doneTransaction->getStatus() . ', Prestashop Status: ' . $payment_status);
 
 		// Check that paid amount matches cart total (v1.7)
 		# String string format compare
@@ -107,24 +107,24 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 		$amount_match = $paid_total === $cart_total;
 
 
-		EasyTransac\Core\Logger::getInstance()->write('OneClick Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
+		$this->module->debugLog('OneClick Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
 
 		if (!$amount_match && 2 == $payment_status)
 		{
 			$payment_message = $this->module->l('Price paid on EasyTransac is not the same that on Prestashop - Transaction : ') . $doneTransaction->getTid();
 			$payment_status = 8;
-			EasyTransac\Core\Logger::getInstance()->write('OneClick Amount mismatch');
+			$this->module->debugLog('OneClick Amount mismatch');
 		}
 
 		// Creating Order
 		$total_paid_float = (float) $paid_total;
-		EasyTransac\Core\Logger::getInstance()->write('OneClick Total paid float: ' . $total_paid_float);
+		$this->module->debugLog('OneClick Total paid float: ' . $total_paid_float);
 
 		if ('failed' != $doneTransaction->getStatus())
 		{
 			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $mailVars = array(), null, false, $customer->secure_key);
 		}
-		EasyTransac\Core\Logger::getInstance()->write('OneClick Order validated');
+		$this->module->debugLog('OneClick Order validated');
 
 		// AJAX Output
 		$json_status_output = '';
@@ -142,7 +142,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 
 		if ($doneTransaction->getError())
 		{
-			EasyTransac\Core\Logger::getInstance()->write('OneClick error:' . $doneTransaction->getError());
+			$this->module->debugLog('OneClick error:' . $doneTransaction->getError());
 			echo json_encode(array(
 				'error' => 'yes',
 				'message' => $doneTransaction->getError()

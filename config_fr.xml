@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
 	<name>easytransac</name>
-	<displayName><![CDATA[EasyTransac]]></displayName>
-	<version><![CDATA[3.0.2]]></version>
-	<description><![CDATA[Service de paiement en ligne]]></description>
+	<displayName><![CDATA[Paiement CB EasyTransac]]></displayName>
+	<version><![CDATA[3.1.0]]></version>
+	<description><![CDATA[Service de paiement en ligne par carte bancaire]]></description>
 	<author><![CDATA[EasyTransac]]></author>
 	<tab><![CDATA[payments_gateways]]></tab>
 	<confirmUninstall><![CDATA[Êtes-vous sûr de vouloir désinstaller?]]></confirmUninstall>
