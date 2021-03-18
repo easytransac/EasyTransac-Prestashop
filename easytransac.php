@@ -25,7 +25,7 @@ class EasyTransac extends PaymentModule
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.2.0';
+        $this->version = '3.2.1';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
@@ -591,7 +591,7 @@ class EasyTransac extends PaymentModule
 				. ' VALUES(' . intval($order_id) . ',\'' . $transaction_id . '\')');
 	}
 
-	public function debugLog($title, $data){
+	public function debugLog($title, $data=""){
 
         if(!is_string($data))
             $data = json_encode($data);
