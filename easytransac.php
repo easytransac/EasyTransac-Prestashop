@@ -108,13 +108,6 @@ class EasyTransac extends PaymentModule
                 Configuration::updateValue('EASYTRANSAC_API_KEY', $api_key);
             }
 
-            $enable_3dsecure = strval(Tools::getValue('EASYTRANSAC_3DSECURE'));
-            if (empty($enable_3dsecure)) {
-                Configuration::updateValue('EASYTRANSAC_3DSECURE', 0);
-            } else {
-                Configuration::updateValue('EASYTRANSAC_3DSECURE', 1);
-            }
-
             $enable_debug = strval(Tools::getValue('EASYTRANSAC_DEBUG'));
             if (empty($enable_debug)) {
                 Configuration::updateValue('EASYTRANSAC_DEBUG', 0);
@@ -214,26 +207,6 @@ class EasyTransac extends PaymentModule
                 'title' => $this->l('Settings'),
             ),
             'input' => array(
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('3DSecure transactions only'),
-                    'desc' => $this->l('3DSecure is a secure payment protocol. Its aim is to reduce fraud for merchants and secure customer payments. The customer will be redirected to his bank\'s site that will ask for additional information.'),
-                    'name' => 'EASYTRANSAC_3DSECURE',
-                    'size' => 20,
-                    'is_bool' => true,
-                    'values' => array(// $values contains the data itself.
-                        array(
-                            'id' => 'active_on', // The content of the 'id' attribute of the <input> tag, and of the 'for' attribute for the <label> tag.
-                            'value' => 1, // The content of the 'value' attribute of the <input> tag.
-                            'label' => $this->l('Enabled')      // The <label> for this radio button.
-                        ),
-                        array(
-                            'id' => 'active_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
                 array(
                     'type' => 'radio',
                     'label' => $this->l('One Click Payment'),
@@ -361,7 +334,6 @@ class EasyTransac extends PaymentModule
         $helper->fields_value['EASYTRANSAC_DEBUG'] = Configuration::get('EASYTRANSAC_DEBUG');
         $helper->fields_value['EASYTRANSAC_ICONDISPLAY'] = Configuration::get('EASYTRANSAC_ICONDISPLAY');
         $helper->fields_value['EASYTRANSAC_API_KEY'] = Configuration::get('EASYTRANSAC_API_KEY');
-        $helper->fields_value['EASYTRANSAC_3DSECURE'] = Configuration::get('EASYTRANSAC_3DSECURE');
         $helper->fields_value['EASYTRANSAC_NOTIFICATION_URL'] = Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/notification';
         $helper->fields_value['EASYTRANSAC_HELP'] = $this->l('Visit') . ' <a target="_blank" href="https://www.easytransac.com">www.easytransac.com</a> ' . $this->l('in order to create an account and configure your application.');
         $helper->fields_value['EASYTRANSAC_REQUIREMENTS_HELP'] = Configuration::get('EASYTRANSAC_REQUIREMENTS_HELP');
