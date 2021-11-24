@@ -12,7 +12,7 @@ class EasyTransacValidationModuleFrontController extends ModuleFrontController
 		$this->module->debugLog('Start Validation');
 		$this->module->debugLog("\n\n" . var_export($_POST, true), FILE_APPEND);
 
-		$this->module->debugLog('Validation order cart id : ' . $this->context->cookie->order_id);
+		$this->module->debugLog('Validation order cart id : ' . $this->context->cookie->cart_id);
 		$cart = new Cart($this->context->cookie->cart_id);
 
 		if (empty($cart->id))

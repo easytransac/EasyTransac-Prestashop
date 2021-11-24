@@ -3,8 +3,7 @@
 namespace EasyTransac\Entities;
 
 /**
- * Represents a credit cards list (response of AddCreditCard and CreditCardsList requests)
- * @author klyde
+ * Represents a credit cards list (response of CreditCardsList request)
  * @copyright EasyTransac
  */
 class CreditCardsList extends Entity
@@ -17,5 +16,3 @@ class CreditCardsList extends Entity
         return $this->creditCards;
     }
 }
-
-?>

@@ -1,33 +1,32 @@
-<?php return array (
-  'root' => 
-  array (
-    'pretty_version' => 'dev-master',
-    'version' => 'dev-master',
-    'aliases' => 
-    array (
+<?php return array(
+    'root' => array(
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => 'f734dec3cb16eaef5107d58f7d0ad88ee9ee7b78',
+        'name' => '__root__',
+        'dev' => true,
     ),
-    'reference' => 'a525b983547b53ca84de75f531cfee86e42d1997',
-    'name' => '__root__',
-  ),
-  'versions' => 
-  array (
-    '__root__' => 
-    array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'a525b983547b53ca84de75f531cfee86e42d1997',
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => 'f734dec3cb16eaef5107d58f7d0ad88ee9ee7b78',
+            'dev_requirement' => false,
+        ),
+        'easytransac/easytransac-sdk-php' => array(
+            'pretty_version' => '1.3.0',
+            'version' => '1.3.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../easytransac/easytransac-sdk-php',
+            'aliases' => array(),
+            'reference' => 'f464c796c4205a0e672fa5829ad13cfd26439583',
+            'dev_requirement' => false,
+        ),
     ),
-    'easytransac/easytransac-sdk-php' => 
-    array (
-      'pretty_version' => '1.2.1',
-      'version' => '1.2.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'b5992f699f9865a238027865eae67e1a5ae023a8',
-    ),
-  ),
 );

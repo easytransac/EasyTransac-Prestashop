@@ -4,17 +4,19 @@ namespace EasyTransac\Entities;
 
 /**
  * Represents arguments of the request "PaymentRefund"
- * @author klyde
  * @copyright EasyTransac
  */
 class Refund extends Entity
 {
     /** @map:Tid **/
     protected $tid = null;
+
     /** @map:Language **/
     protected $language = null;
+
     /** @map:Amount **/
     protected $amount = null;
+
     /** @map:Reason **/
     protected $reason = null;
 
@@ -23,13 +25,13 @@ class Refund extends Entity
         $this->amount = $amount;
         return $this;
     }
-    
+
     public function setReason($reason)
     {
-    	$this->reason = $reason;
+        $this->reason = $reason;
         return $this;
     }
-    
+
     public function setTid($tid)
     {
         $this->tid = $tid;
@@ -41,7 +43,4 @@ class Refund extends Entity
         $this->language = $language;
         return $this;
     }
-
 }
-
-?>

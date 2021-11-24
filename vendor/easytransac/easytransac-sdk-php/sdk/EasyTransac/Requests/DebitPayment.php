@@ -2,11 +2,11 @@
 
 namespace EasyTransac\Requests;
 
-use \EasyTransac\Entities\Entity;
+use EasyTransac\Entities\Entity;
 
 /**
  * API function /payment/debit, makes a payment by "debit"
- * @author Klyde
+ * URL: https://www.easytransac.com/fr/documentation#tag/API-Payment/paths/~1api~1payment~1debit/post
  * @copyright EasyTransac
  */
 class DebitPayment extends Request
@@ -23,5 +23,3 @@ class DebitPayment extends Request
         return $this->call('/payment/debit', $entity);
     }
 }
-
-?>

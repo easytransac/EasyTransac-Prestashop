@@ -1,22 +1,23 @@
 EasyTransac SDK (PHP)
 =====================
-[![Build Status](https://travis-ci.org/easytransac/easytransac-sdk-php.svg?branch=master)](https://travis-ci.org/easytransac/easytransac-sdk-php)
-[![Latest Stable Version](https://poser.pugx.org/easytransac/easytransac-sdk-php/version)](https://packagist.org/packages/easytransac/easytransac-sdk-php)
+
+[![Build](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/build.yml/badge.svg)](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/build.yml)
+[![PSR12](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/psr12.yml/badge.svg)](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/psr12.yml)
+[![Test](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/test.yml/badge.svg)](https://github.com/easytransac/easytransac-sdk-php/actions/workflows/test.yml)
 [![Coverage Status](https://coveralls.io/repos/github/easytransac/easytransac-sdk-php/badge.svg?branch=master)](https://coveralls.io/github/easytransac/easytransac-sdk-php?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/easytransac/easytransac-sdk-php/version)](https://packagist.org/packages/easytransac/easytransac-sdk-php)
 
 Make your EasyTransac API implementation easier with our SDK.
 
 The EasyTransac SDK is a tool to process payments with the [EasyTransac API](https://www.easytransac.com/).
 
-Currently it processes credit cards and SEPA Direct Debit (SDD).
-
 Requirements
 ------------
 
 You need at least:
-  - PHP >=5.5
+  - PHP >=5.6
   - cURL in order to get clear error messages
-  - an API key provided by EasyTransac (register an account at [EasyTransac website](https://www.easytransac.com/))
+  - An API key provided by EasyTransac (register an account at [EasyTransac website](https://www.easytransac.com/))
   - OpenSSL version 1.0.1 to support TLSv1.2 ciphers
 
 Installation
@@ -24,11 +25,11 @@ Installation
 
 ### By composer
 
-Execute this command on you terminal in your project folder:
+Execute this command on your terminal in the project folder:
 
     composer require easytransac/easytransac-sdk-php
 
-Or add in your *composer.json*:
+Or add this in your *composer.json*:
 
     "require": {
       ...

@@ -4,19 +4,18 @@ namespace EasyTransac\Entities;
 
 /**
  * Represents arguments for request "Cancellation"
- * @author Klyde
  * @copyright EasyTransac
  */
 class Cancellation extends Entity
 {
-    /** @map:Tid **/
-    protected $tid = null;
+    /** @map:RequestId **/
+    protected $requestId = null;
     /** @map:Language **/
     protected $language = null;
 
-    public function setTid($tid)
+    public function setRequestId($requestId)
     {
-        $this->tid = $tid;
+        $this->requestId = $requestId;
         return $this;
     }
 
@@ -26,5 +25,3 @@ class Cancellation extends Entity
         return $this;
     }
 }
-
-?>
