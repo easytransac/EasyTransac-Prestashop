@@ -51,6 +51,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$this->module->debugLog('Notification client ID', $response->getClient()->getId());
 		$this->module->debugLog('save tid - orderId', $response->getOrderId().' - '.$response->getTid());
 		
+		# Saves Easytransac transaction id.
+		
 		$this->module->setTransactionId($response->getOrderId(), $response->getTid());
 		$payment_status = null;
 		$payment_message = $response->getMessage();
@@ -64,7 +66,7 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				break;
 
 			case 'pending':
-				$payment_status = (int) Configuration::get('EASYTRANSAC_ID_ORDER_STATE');
+				$payment_status = $this->module->get_pending_payment_state();
 				break;
 
 			case 'refunded':
@@ -86,7 +88,7 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 
 		$this->module->debugLog('Notification Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
 
-		// Useful if amount doesn't match and it's an update
+		// Useful if amount doesn't match and it's an update.
 		$original_new_state = $payment_status;
 
 		// Multiple payments.
@@ -96,6 +98,16 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			'repeat'  => $_POST['MultiplePaymentsRepeat'],
 			'count'   => $_POST['MultiplePaymentsCount'],
 		];
+
+		# Whether this transaction is part of a payment in instalments.
+		$is_payment_in_instalment = $multipay['ismulti'] == 'yes';
+
+		# Whether this transaction is the last one of
+		# a payment in instalments.
+		if($is_payment_in_instalment){
+			$is_instalment_completed = $multipay['count'] == $multipay['repeat'];
+		}
+
 		// $multipay = [
 		// 	'ismulti' => $transactionItem->getMultiplePayments(),
 		// 	'status'	=> $transactionItem->getMultiplePaymentsStatus(),
@@ -105,22 +117,34 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 
 		$this->module->debugLog('Multipay: '.implode(', ', $multipay));
 
-		if (!$amount_match && 2 == $payment_status && $multipay['ismulti'] != 'yes')
+		// A standard payment's transaction amount must match order amount.
+		if (!$amount_match && 2 == $payment_status && ! $is_payment_in_instalment)
 		{
-			$payment_message = $this->l('Price paid on EasyTransac is not the same that on Prestashop - Transaction : ') . $response->getTid();
+			$payment_message = 
+				$this->l('Price paid on EasyTransac is not the same as on Prestashop - Transaction : ')
+				. $response->getTid();
+
 			$payment_status = 8;
 			$this->module->debugLog('Notification Amount mismatch');
 		}
 
-		if($multipay['ismulti'] == 'yes' && $payment_status == 2){
-			$payment_message = $this->l('Payment in instalments');
-					// . sprintf('%d/%d', $transactionItem->getMultiplePaymentsCount(), $transactionItem->getMultiplePaymentsRepeat());
+		// Payment status for capture payment in instalment.
+		if($is_payment_in_instalment && $payment_status == 2){
+
+			$payment_message = $this->l('Payment in instalments')
+					. sprintf(' %d/%d', $multipay['count'], $multipay['repeat']);
+
 			$payment_status = $this->module->get_split_payment_state();
-			$this->module->debugLog('Notification Order set to SPLIT PAYMENT STATE');
+			$this->module->debugLog('Notification Order set to PAYMENT IN INSTALMENTS STATE');
 		}
 
 		$this->module->debugLog('Payment status', $payment_status);
 
+		// Appends transaction id to order message.
+		$payment_message = sprintf('%s - Tid: %s', $payment_message, 
+																$response->getTid());
+
+		// First order process.
 		if (empty($existing_order->id) || empty($existing_order->current_state))
 		{
 			$total_paid_float = (float) $paid_total;
@@ -131,46 +155,47 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 
 			$this->module->debugLog('Notification Order saved');
 
-			// Add message
-			if (isset($payment_message) && !empty($payment_message))
-			{
-				$msg = new Message();
-				$message = strip_tags($payment_message, '<br>');
-				$msg->message = $message;
-				$msg->id_order = intval($existing_order->id);
-				$msg->private = 1;
-				$msg->add();
-				$this->module->debugLog('message added', $message);
-			}
+			$existing_order_id = OrderCore::getOrderByCartId($cart->id);
+
+			$this->module->addOrderMessage($existing_order_id, $payment_message);
 
 			die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 		}
 
 
-		if (((int) $existing_order->current_state != 2 || (int) $payment_status == 7) && (int) $existing_order->current_state != (int) $original_new_state)
+		if (((int) $existing_order->current_state != 2 
+				  || (int) $payment_status == 7)
+				&& (int) $existing_order->current_state != (int) $original_new_state)
 		{
 			// Updating the order's state only if current state is not captured
 			// or if target state is refunded
 			$existing_order->setCurrentState($payment_status);
 
-			// Add message
-			if (isset($payment_message) && !empty($payment_message))
-			{
-				$msg = new Message();
-				$message = strip_tags($payment_message, '<br>');
-				$msg->message = $message;
-				$msg->id_order = intval($existing_order->id);
-				$msg->private = 1;
-				$msg->add();
-				$this->module->debugLog('message added', $message);
-			}
+			$this->module->addOrderMessage($existing_order->id, $payment_message);
+
 			$this->module->debugLog('Notification : order state changed to', $payment_status);
+		}
+		elseif ($is_payment_in_instalment) {
+			/**
+			 * Payment in instalments process.
+			 */
+			$this->module->addOrderMessage($existing_order->id, $payment_message);
+
+			// Last instalment.
+			if($is_instalment_completed){
+				$existing_order->setCurrentState($payment_status);
+				$this->module->addOrderMessage($existing_order->id,
+													$this->l('Payment in instalments completed'));
+			}
 		}
 		else
 		{
-			$this->module->debugLog('Notification : invalid target state or same state as', $payment_status);
+			$this->module->debugLog(
+				'Notification : invalid target state or same state as',
+				$payment_status);
 		}
 		$this->module->debugLog('Notification End of Script');
+
 		die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 	}
 

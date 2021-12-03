@@ -96,7 +96,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				break;
 
 			case 'pending':
-				$payment_status = (int) Configuration::get('EASYTRANSAC_ID_ORDER_STATE');
+				$payment_status = $this->get_pending_payment_state();
 				break;
 
 			case 'refunded':
