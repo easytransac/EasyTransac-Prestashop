@@ -29,8 +29,9 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				->setAlias(strip_tags($_POST['Alias']))
 				->setAmount($total)
 				->setOrderId($this->context->cart->id)
-				->setClientId($this->context->customer->getClient_id());
-
+				->setClientId($this->context->customer->getClient_id())
+				->setSecure('yes')
+				->setReturnUrl(Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/validation');
 
 		$dp = new EasyTransac\Requests\OneClickPayment();
 		$response = $dp->execute($transaction);
@@ -39,6 +40,16 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 		{
 			echo json_encode(array(
 				'error' => 'yes', 'message' => $response->getErrorMessage()
+			));
+			return;
+		}
+
+		$transactionItem = $response->getContent();
+
+		$url = $transactionItem->getSecureUrl();
+		if($url){
+			echo json_encode(array(
+				'redirect_page' => $url,
 			));
 			return;
 		}

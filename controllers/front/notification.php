@@ -13,7 +13,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 	{
 		$this->module->loginit();
 		$this->module->debugLog('Start Notification');
-		$this->module->debugLog('Data', var_export($_POST, true));
+		$this->module->debugLog('Data POST', var_export($_POST, true));
+
 		try
 		{
 			$response = \EasyTransac\Core\PaymentNotification::getContent($_POST, Configuration::get('EASYTRANSAC_API_KEY'));
@@ -27,6 +28,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			error_log('EasyTransac error: ' . $exc->getMessage());
 			die;
 		}
+
+		$transactionItem = $response->getContent();
 
 		$this->module->debugLog('Notification for Tid', $response->getTid());
 		$this->module->create_easytransac_order_state();
@@ -86,22 +89,63 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		// Useful if amount doesn't match and it's an update
 		$original_new_state = $payment_status;
 
-		if (!$amount_match && 2 == $payment_status)
+		// Multiple payments.
+		$multipay = [
+			'ismulti' => $_POST['MultiplePayments'],
+			'status'	=> $_POST['MultiplePaymentsStatus'],
+			'repeat'  => $_POST['MultiplePaymentsRepeat'],
+			'count'   => $_POST['MultiplePaymentsCount'],
+		];
+		// $multipay = [
+		// 	'ismulti' => $transactionItem->getMultiplePayments(),
+		// 	'status'	=> $transactionItem->getMultiplePaymentsStatus(),
+		// 	'repeat'  => $transactionItem->getMultiplePaymentsRepeat(),
+		// 	'count'   => $transactionItem->getMultiplePaymentsCount(),
+		// ];
+
+		$this->module->debugLog('Multipay: '.implode(', ', $multipay));
+
+		if (!$amount_match && 2 == $payment_status && $multipay['ismulti'] != 'yes')
 		{
 			$payment_message = $this->l('Price paid on EasyTransac is not the same that on Prestashop - Transaction : ') . $response->getTid();
 			$payment_status = 8;
 			$this->module->debugLog('Notification Amount mismatch');
 		}
 
+		if($multipay['ismulti'] == 'yes' && $payment_status == 2){
+			$payment_message = $this->l('Payment in instalments');
+					// . sprintf('%d/%d', $transactionItem->getMultiplePaymentsCount(), $transactionItem->getMultiplePaymentsRepeat());
+			$payment_status = $this->module->get_split_payment_state();
+			$this->module->debugLog('Notification Order set to SPLIT PAYMENT STATE');
+		}
+
+		$this->module->debugLog('Payment status', $payment_status);
+
 		if (empty($existing_order->id) || empty($existing_order->current_state))
 		{
 			$total_paid_float = (float) $paid_total;
 			$this->module->debugLog('Notification Total paid float: ' . $total_paid_float);
 			$extra_vars = ['transaction_id' => $response->getTid()];
+
 			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $extra_vars, null, false, $customer->secure_key);
-			$this->module->debugLog('Notification Order validated');
+
+			$this->module->debugLog('Notification Order saved');
+
+			// Add message
+			if (isset($payment_message) && !empty($payment_message))
+			{
+				$msg = new Message();
+				$message = strip_tags($payment_message, '<br>');
+				$msg->message = $message;
+				$msg->id_order = intval($existing_order->id);
+				$msg->private = 1;
+				$msg->add();
+				$this->module->debugLog('message added', $message);
+			}
+
 			die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 		}
+
 
 		if (((int) $existing_order->current_state != 2 || (int) $payment_status == 7) && (int) $existing_order->current_state != (int) $original_new_state)
 		{

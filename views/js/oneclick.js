@@ -3,11 +3,13 @@
  */
 
 
-window.onload = function () {
+var ETOneClick = function () {
     jQuery(function ($) {
         'use strict';
+
         // Double load failsafe.
         var session_id = 'easytransac-oneclick' + Date.now();
+        console.log('here');
 
         // Creates workspace.
         $('#easytransac-namespace').append($('<div id="' + session_id + '" class="payment_box payment_method_easytransac">'));
@@ -53,14 +55,17 @@ window.onload = function () {
             var _space = $('#' + session_id);
 
             // Label
-            var label = $('<span style="margin-left: -7px" title="Direct credit card payment"></span>')
+            var _labeldiv = $('<div class="etlabeltext">');
+
+            var label = $('<label title="Direct credit card payment"></label>')
             if (typeof (chooseCardi18n) !== 'undefined') {
                 label[0].innerHTML = chooseCardi18n + ' ';
             }
-            _space.append(label);
+            _labeldiv.append(label);
+            _space.append(_labeldiv);
 
             // Dropdown
-            _space.append($('<select id="etalcadd001" name="oneclick_alias" style="width:200p;margin-top:10px;text-align:center;">'));
+            _space.append($('<select id="etalcadd001" class="custom-select form-control" name="oneclick_alias" style="text-align:center;">'));
 
             $('#etalcadd001')
                 .append($('<option value="">---</option>'));
@@ -71,7 +76,7 @@ window.onload = function () {
             });
 
             // Button
-            var button = $(' <input type="submit" id="etocbu001" class="button btn btn-primary center-block" style="margin-top:15px;margin-left: -6px;text-align:center;">');
+            var button = $(' <input type="submit" id="etocbu001" class="button btn btn-primary center-block" style="text-align:center;">');
             button.disable = () => {
                 button[0].disabled = true;
             };
@@ -83,7 +88,9 @@ window.onload = function () {
             if (typeof (payNowi18n) !== 'undefined') {
                 button[0].value = payNowi18n;
             }
-            _space.append(button);
+            var _divbtn = $('<div class="oneclick-et-btndiv">');
+            _divbtn.append(button);
+            _space.append(_divbtn);
 
             // On dropdown change.
             $('#etalcadd001').on('change', () => {
@@ -166,6 +173,15 @@ window.onload = function () {
                     type: 'POST',
                     dataType: 'json'
                 }).done(function (data) {
+
+                    console.log(data);
+                    console.log(typeof(data.redirect_page));
+                    
+                    if (typeof(data.redirect_page) !== 'undefined') {
+                        window.location.href = data.redirect_page;
+                        return;
+                    }
+
                     if (data.error === 'no') {
                         if (data.paid_status === 'processed') {
                             window.location.href = data.redirect_page;
@@ -182,3 +198,12 @@ window.onload = function () {
         }
     });
 };
+
+if (window.addEventListener) // W3C standard
+{
+  window.addEventListener('load', ETOneClick, false);
+} 
+else if (window.attachEvent) // Microsoft
+{
+  window.attachEvent('onload', ETOneClick);
+}

@@ -1,6 +1,41 @@
 <p class="payment_module easytransac">
                             
 </p>
+<h5 class="easytransac">{l s='One click payment' mod='easytransac'}</h5>
+
+<style>
+.payment_method_easytransac{
+    display: grid;
+    grid-column-gap: 0.5rem;
+    grid-row-gap: 1rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding-top: 15px;
+}
+
+    .etlabeltext > label{
+        text-align: center;
+    }
+
+@media (max-width: 600px) {
+    .payment_method_easytransac{
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+h5.easytransac{
+    padding-top: 1rem;
+}
+
+#etocbu001{
+    width: 97%;
+}
+@media (max-width: 600px) {
+    #etocbu001{
+        width: 100%;
+    }
+}
+</style>
+
 <div id="easytransac-namespace">
 </div>
 

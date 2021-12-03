@@ -124,6 +124,32 @@ class EasyTransac extends PaymentModule
                 Configuration::updateValue('EASYTRANSAC_ONECLICK', 1);
             }
 
+            // $enable_multipay = strval(Tools::getValue('EASYTRANSAC_MULTIPAY'));
+            // if (empty($enable_multipay)) {
+            //     Configuration::updateValue('EASYTRANSAC_MULTIPAY', 0);
+            // } else {
+            //     Configuration::updateValue('EASYTRANSAC_MULTIPAY', 1);
+            // }
+
+            # Installment payments
+            Configuration::updateValue('EASYTRANSAC_MULTIPAY', 0);
+
+            
+            foreach([2, 3, 4] as $a){
+                $key = sprintf('EASYTRANSAC_MULTIPAY%sX', $a);
+                $isEnabled = strval(Tools::getValue($key));
+
+                if (empty($isEnabled)) {
+                    Configuration::updateValue($key, 0);
+                } else {
+                    Configuration::updateValue($key, 1);
+                    Configuration::updateValue('EASYTRANSAC_MULTIPAY', 1);
+                }
+            }
+
+            # END Installment payments
+
+            
             $enable_icon= strval(Tools::getValue('EASYTRANSAC_ICONDISPLAY'));
             if (empty($enable_icon)) {
                 Configuration::updateValue('EASYTRANSAC_ICONDISPLAY', 0);
@@ -135,6 +161,14 @@ class EasyTransac extends PaymentModule
         }
 
         return $output . $this->displayForm();
+    }
+
+    public function instalment_payment_count_enabled($count) {
+        if(!in_array($count, [2, 3, 4])){
+            return false;
+        }
+        $key = 'EASYTRANSAC_MULTIPAY'.$count.'X';
+        return (bool)Configuration::get($key);
     }
 
     /**
@@ -208,8 +242,32 @@ class EasyTransac extends PaymentModule
             ),
             'input' => array(
                 array(
+                    'type' => 'free',
+                    'label' => $this->l('Requirements'),
+                    'desc' => $requirements_message,
+                    'name' => 'EASYTRANSAC_REQUIREMENTS_HELP',
+                    'size' => 20,
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Api Key'),
+                    //Saisissez cette URL sur votre espace client, dans la partie E-commerce > Applications puis en cliquant sur "Editer".
+                    'desc' => $this->l('Your Easytransac application API Key is available in your back office in E-commerce > Applications.'),
+                    'name' => 'EASYTRANSAC_API_KEY',
+                    'size' => 20,
+                    'required' => true
+                ),
+                array(
+                    'type' => 'free',
+                    'label' => $this->l('Notification URL'),
+                    'desc' => $this->l('Notification URL to copy paste in your EasyTransac appplication settings'),
+                    'name' => 'EASYTRANSAC_NOTIFICATION_URL',
+                    'size' => 20,
+                ),
+                array(
                     'type' => 'radio',
                     'label' => $this->l('One Click Payment'),
+                    'desc' => $this->l('The credit card is stored for future payments.'),
                     'name' => 'EASYTRANSAC_ONECLICK',
                     'size' => 20,
                     'is_bool' => true,
@@ -228,8 +286,8 @@ class EasyTransac extends PaymentModule
                 ),
                 array(
                     'type' => 'radio',
-                    'label' => 'Debug Mode',
-                    'name' => 'EASYTRANSAC_DEBUG',
+                    'label' => $this->l('Enable payment in 2 instalments'),
+                    'name' => 'EASYTRANSAC_MULTIPAY2X',
                     'size' => 20,
                     'is_bool' => true,
                     'values' => array(// $values contains the data itself.
@@ -247,8 +305,8 @@ class EasyTransac extends PaymentModule
                 ),
                 array(
                     'type' => 'radio',
-                    'label' => 'Icon display',
-                    'name' => 'EASYTRANSAC_ICONDISPLAY',
+                    'label' => $this->l('Enable payment in 3 instalments'),
+                    'name' => 'EASYTRANSAC_MULTIPAY3X',
                     'size' => 20,
                     'is_bool' => true,
                     'values' => array(// $values contains the data itself.
@@ -265,32 +323,63 @@ class EasyTransac extends PaymentModule
                     ),
                 ),
                 array(
-                    'type' => 'free',
-                    'label' => $this->l('Configuration'),
-                    'desc' => $this->l('Create an application configuration and copy paste your API key in the next input.'),
-                    'name' => 'EASYTRANSAC_HELP',
+                    'type' => 'radio',
+                    'label' => $this->l('Enable payment in 4 instalments'),
+                    'name' => 'EASYTRANSAC_MULTIPAY4X',
                     'size' => 20,
+                    'is_bool' => true,
+                    'values' => array(// $values contains the data itself.
+                        array(
+                            'id' => 'active2_on', // The content of the 'id' attribute of the <input> tag, and of the 'for' attribute for the <label> tag.
+                            'value' => 1, // The content of the 'value' attribute of the <input> tag.
+                            'label' => $this->l('Enabled')   // The <label> for this radio button.
+                        ),
+                        array(
+                            'id' => 'active2_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled')
+                        )
+                    ),
                 ),
                 array(
-                    'type' => 'free',
-                    'label' => $this->l('Requirements'),
-                    'desc' => $requirements_message,
-                    'name' => 'EASYTRANSAC_REQUIREMENTS_HELP',
+                    'type' => 'radio',
+                    'label' => $this->l('Icon display'),
+                    'name' => 'EASYTRANSAC_ICONDISPLAY',
+                    'desc' => $this->l('Display Easytransac icon at checkout'),
                     'size' => 20,
+                    'is_bool' => true,
+                    'values' => array(// $values contains the data itself.
+                        array(
+                            'id' => 'active2_on', // The content of the 'id' attribute of the <input> tag, and of the 'for' attribute for the <label> tag.
+                            'value' => 1, // The content of the 'value' attribute of the <input> tag.
+                            'label' => $this->l('Enabled')   // The <label> for this radio button.
+                        ),
+                        array(
+                            'id' => 'active2_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled')
+                        )
+                    ),
                 ),
                 array(
-                    'type' => 'text',
-                    'label' => $this->l('EasyTransac Api Key'),
-                    'name' => 'EASYTRANSAC_API_KEY',
+                    'type' => 'radio',
+                    'label' => $this->l('Debug mode'),
+                    'desc' => $this->l('Save the transaction log for debugging purpose.'),
+                    'name' => 'EASYTRANSAC_DEBUG',
                     'size' => 20,
-                    'required' => true
-                ),
-                array(
-                    'type' => 'free',
-                    'label' => $this->l('Notification URL'),
-                    'desc' => $this->l('Notification URL to copy paste in your EasyTransac appplication settings'),
-                    'name' => 'EASYTRANSAC_NOTIFICATION_URL',
-                    'size' => 20,
+                    'is_bool' => true,
+                    'values' => array(// $values contains the data itself.
+                        array(
+                            'id' => 'active2_on', // The content of the 'id' attribute of the <input> tag, and of the 'for' attribute for the <label> tag.
+                            'value' => 1, // The content of the 'value' attribute of the <input> tag.
+                            'label' => $this->l('Enabled')   // The <label> for this radio button.
+                        ),
+                        array(
+                            'id' => 'active2_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled')
+                        )
+                    ),
                 ),
             ),
             'submit' => array(
@@ -331,6 +420,14 @@ class EasyTransac extends PaymentModule
 
         // Load current value
         $helper->fields_value['EASYTRANSAC_ONECLICK'] = Configuration::get('EASYTRANSAC_ONECLICK');
+
+        # true if one instalment payment count is enabled
+        $helper->fields_value['EASYTRANSAC_MULTIPAY'] = Configuration::get('EASYTRANSAC_MULTIPAY');
+
+        $helper->fields_value['EASYTRANSAC_MULTIPAY2X'] = Configuration::get('EASYTRANSAC_MULTIPAY2X');
+        $helper->fields_value['EASYTRANSAC_MULTIPAY3X'] = Configuration::get('EASYTRANSAC_MULTIPAY3X');
+        $helper->fields_value['EASYTRANSAC_MULTIPAY4X'] = Configuration::get('EASYTRANSAC_MULTIPAY4X');
+
         $helper->fields_value['EASYTRANSAC_DEBUG'] = Configuration::get('EASYTRANSAC_DEBUG');
         $helper->fields_value['EASYTRANSAC_ICONDISPLAY'] = Configuration::get('EASYTRANSAC_ICONDISPLAY');
         $helper->fields_value['EASYTRANSAC_API_KEY'] = Configuration::get('EASYTRANSAC_API_KEY');
@@ -352,7 +449,7 @@ class EasyTransac extends PaymentModule
         $this->loginit();
         $newOption = new PaymentOption();
         // $paymentForm = $this->fetch('module:easytransac/views/templates/hook/checkout_payment.tpl');
-        $newOption->setCallToActionText($this->l('Pay by EasyTransac'))
+        $newOption->setCallToActionText($this->l('Pay by credit card'))
                   ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
         if(Configuration::get('EASYTRANSAC_ICONDISPLAY')){
@@ -360,10 +457,33 @@ class EasyTransac extends PaymentModule
         }
         
         EasyTransac\Core\Logger::getInstance()->write($this->context->customer);
+        $buffer = [];
+
         if (Configuration::get('EASYTRANSAC_ONECLICK') && $this->context->customer->getClient_id() != null)
         {
             $oneClickPaymentForm = $this->context->smarty->fetch('module:easytransac/views/templates/hook/oneclick_payment.tpl');
-            $newOption->setAdditionalInformation($oneClickPaymentForm);
+            $buffer[] = $oneClickPaymentForm;
+        }
+
+        if (Configuration::get('EASYTRANSAC_MULTIPAY') && $this->context->customer->getClient_id() != null)
+        {
+            if($buffer){
+                $buffer[] = '<br/>';
+            }
+            # Template vars.
+            $enabled_vars = [];
+            foreach ([2, 3, 4] as $count) {
+                $enabled_vars['enableInstallment'.$count] = $this->instalment_payment_count_enabled($count);
+            }
+
+            $this->context->smarty->assign($enabled_vars);
+
+            $multi = $this->context->smarty->fetch('module:easytransac/views/templates/hook/multiple_payments.tpl');
+            $buffer[] = $multi;
+        }
+
+        if($buffer){
+            $newOption->setAdditionalInformation(implode('', $buffer));
         }
         
         return [$newOption];
@@ -460,6 +580,25 @@ class EasyTransac extends PaymentModule
             $OrderState->add();
             Configuration::updateValue('EASYTRANSAC_ID_ORDER_STATE', $OrderState->id);
         }
+
+        if (!(Configuration::get('EASYTRANSAC_ID_SPLIT_PAYMENT_STATE3') > 0)) {
+            // for sites upgrading from older version
+            $OrderState = new OrderState();
+            $OrderState->id = 'EASYTRANSAC_ID_SPLIT_PAYMENT_STATE3';
+            $OrderState->name = array_fill(0, 10, "EasyTransac payment in instalments");
+            $OrderState->send_email = 0;
+            $OrderState->invoice = 0;
+            $OrderState->color = "#8067ee";
+            $OrderState->unremovable = false;
+            $OrderState->logable = 0;
+            $OrderState->paid = 0;
+            $OrderState->add();
+            Configuration::updateValue('EASYTRANSAC_ID_SPLIT_PAYMENT_STATE3', $OrderState->id);
+        }
+    }
+
+    public function get_split_payment_state(){
+        return Configuration::get('EASYTRANSAC_ID_SPLIT_PAYMENT_STATE3');
     }
 
     /**
