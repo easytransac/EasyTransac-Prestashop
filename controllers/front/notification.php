@@ -141,8 +141,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$this->module->debugLog('Payment status', $payment_status);
 
 		// Appends transaction id to order message.
-		$payment_message = sprintf('%s - Tid: %s', $payment_message, 
-																$response->getTid());
+		// $payment_message = sprintf('%s - Tid: %s', $payment_message, 
+		// 														$response->getTid());
 
 		// First order process.
 		if (empty($existing_order->id) || empty($existing_order->current_state))
@@ -157,7 +157,15 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 
 			$existing_order_id = OrderCore::getOrderByCartId($cart->id);
 
+			# former Prestashop 1.7.0 version
 			$this->module->addOrderMessage($existing_order_id, $payment_message);
+
+						# for Prestashop >= 1.7.7
+			$this->module->addTransactionMessage(
+											$existing_order_id,
+											$response->getTid(), 
+											$payment_message,
+											$response->getAmount() *100);
 
 			die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
 		}
@@ -181,11 +189,28 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			 */
 			$this->module->addOrderMessage($existing_order->id, $payment_message);
 
+			# for Prestashop >= 1.7.7
+			$this->module->addTransactionMessage(
+											$existing_order_id,
+											$response->getTid(), 
+											$payment_message,
+											$response->getAmount() *100);
+
 			// Last instalment.
 			if($is_instalment_completed){
-				$existing_order->setCurrentState($payment_status);
+				$completed_notice = $this->l('Payment in instalments completed');
+
+				# Complete payment order status.
+				$existing_order->setCurrentState(2);
+
 				$this->module->addOrderMessage($existing_order->id,
-													$this->l('Payment in instalments completed'));
+																			 $completed_notice);
+
+				$this->module->addTransactionMessage(
+					$existing_order_id,
+					$response->getTid(),
+					$completed_notice,
+					$response->getAmount() *100);
 			}
 		}
 		else

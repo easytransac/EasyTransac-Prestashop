@@ -18,13 +18,16 @@ class EasyTransacListcardsModuleFrontController extends ModuleFrontController
 			die(json_encode(array('status' => 0)));
 		
 		$this->module->loginit();
-		$this->module->debugLog($this->context->customer->getClient_id());
-		EasyTransac\Core\Services::getInstance()->provideAPIKey(Configuration::get('EASYTRANSAC_API_KEY'));
-		$clientId = $this->context->customer->getClient_id();
-		if (empty($clientId))
+		
+		if (!$this->module->isCustomerKnown())
 		{
 			die(json_encode(array('status' => 0)));
 		}
+		$this->module->debugLog('Client id', $this->context->customer->getClient_id());
+		
+		EasyTransac\Core\Services::getInstance()->provideAPIKey(Configuration::get('EASYTRANSAC_API_KEY'));
+		$clientId = $this->context->customer->getClient_id();
+
 		$customer = (new EasyTransac\Entities\Customer())->setClientId($clientId);
 
 		$request = new EasyTransac\Requests\CreditCardsList();

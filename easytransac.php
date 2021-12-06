@@ -16,7 +16,7 @@ class EasyTransac extends PaymentModule
     /**
      * Development variable.
      */
-    private $debugLogEnabled = false;
+    private $debugLogEnabled = true;
 
     /**
      * Module init.
@@ -133,13 +133,14 @@ class EasyTransac extends PaymentModule
             Configuration::updateValue('EASYTRANSAC_MULTIPAY', 0);
 
             foreach([2, 3, 4] as $a){
-                $key = sprintf('EASYTRANSAC_MULTIPAY%sX', $a);
+                $key = sprintf('EASYTRANSAC_MULTIPAY%dX', $a);
                 $isEnabled = strval(Tools::getValue($key));
 
                 if (empty($isEnabled)) {
                     Configuration::updateValue($key, 0);
                 } else {
                     Configuration::updateValue($key, 1);
+
                     Configuration::updateValue('EASYTRANSAC_MULTIPAY', 1);
                 }
             }
@@ -465,7 +466,6 @@ class EasyTransac extends PaymentModule
         }
         $this->loginit();
         $newOption = new PaymentOption();
-        // $paymentForm = $this->fetch('module:easytransac/views/templates/hook/checkout_payment.tpl');
         $newOption->setCallToActionText($this->l('Pay by credit card'))
                   ->setAction($this->context->link->getModuleLink($this->name, 'payment'));
 
@@ -473,19 +473,20 @@ class EasyTransac extends PaymentModule
             $newOption->setLogo(_MODULE_DIR_ . 'easytransac/views/img/icon.png');
         }
         
-        EasyTransac\Core\Logger::getInstance()->write($this->context->customer);
+        // EasyTransac\Core\Logger::getInstance()->write($this->context->customer);
 
-        // Buffer for adding up templates.
+        // Adding up templates.
         $buffer = [];
 
-        if (Configuration::get('EASYTRANSAC_ONECLICK') && $this->context->customer->getClient_id() != null)
+        // Customer should have paid at least one time using Easytransac.
+        if (Configuration::get('EASYTRANSAC_ONECLICK') &&
+            $this->isCustomerKnown())
         {
             $buffer[] = $this->context->smarty->fetch(
                                         'module:easytransac/views/templates/hook/oneclick_payment.tpl');
         }
 
-        if (Configuration::get('EASYTRANSAC_MULTIPAY') 
-            && $this->context->customer->getClient_id() != null)
+        if (Configuration::get('EASYTRANSAC_MULTIPAY'))
         {
             if($buffer){
                 $buffer[] = '<br/>';
@@ -504,11 +505,23 @@ class EasyTransac extends PaymentModule
             $buffer[] = $multi;
         }
 
+        // $this->debugLog('customer id', $this->context->customer->id);
+        // $this->debugLog('oneClick', Configuration::get('EASYTRANSAC_ONECLICK'));
+        // $this->debugLog('tpl', $buffer);
         if($buffer){
             $newOption->setAdditionalInformation(implode('', $buffer));
         }
         
         return [$newOption];
+    }
+
+    /**
+     * Returns whether the customer has already paid via Easytransac.
+     * @return bool
+     */
+    private function isCustomerKnown(){
+        $client_id = $this->context->customer->getClient_id();
+        return !empty($client_id);
     }
 
     /**
@@ -649,8 +662,37 @@ class EasyTransac extends PaymentModule
         return (int)Configuration::get('EASYTRANSAC_ID_ORDER_STATE');
     }
 
+    // Hook for Prestashop version >= 1.7.7 for a block on order page.
     public function hookDisplayAdminOrderTabContent($params){
-        return 'HOOK_CALLED_HERE';
+
+        // # Display transaction's saved messages.
+        $items = $this->getTransactionMessages($params['id_order']);
+
+        $notice = $this->l('No transactions yet.');
+        $show_history = false;
+
+        // if(0){
+        if(!empty($params)){
+
+            $buffer = [];
+            foreach ($items as $item) {
+                $buffer[] = implode(', ', $item);
+                $show_history = true;
+            }
+            if($buffer){
+                $notice = implode('<br/>', $buffer);
+            }
+        }
+        
+        $vars = [
+            'notice' => $notice,
+            'show_history' => $show_history,
+        ];
+
+        $this->context->smarty->assign($vars);
+
+        return $this->context->smarty->fetch(
+                    'module:easytransac/views/templates/hook/admin_order_tab.tpl');
     }
 
     /**
@@ -761,6 +803,50 @@ class EasyTransac extends PaymentModule
 	{
 		Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_transaction` '
 				. ' VALUES(' . intval($order_id) . ',\'' . $transaction_id . '\')');
+	}
+
+    /**
+     * Save the transaction message.
+     * @return bool
+     */
+	function addTransactionMessage($order_id, $transaction_id, $message, $amount=null)
+	{
+        # amount can be null.
+        $amount = 'NULL';
+
+        if($amount !== null){
+            $amount = intval($amount);
+        }
+
+        # message max size.
+        if(strlen($message) > 255){
+            $message = strip_tags($message);
+            $message = substr($message, 0, 250);
+        }
+
+        /** @var \Db $db */
+        $db = \Db::getInstance();
+
+		$db->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_message` '
+				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $transaction_id . '\', ' . $amount . ')');
+        
+        return $db->Affected_Rows() > 0;
+	}
+
+    /**
+     * Return the saved transaction messages for an order.
+     * @return array  [[id_order, date, message, external_id, amount]]
+     */
+    function getTransactionMessages($order_id)
+	{
+        /** @var array $result */
+        $result = Db::getInstance()->ExecuteS('SELECT * FROM `' . _DB_PREFIX_ 
+                                            . 'easytransac_message`');
+
+        if($this->debugLogEnabled){
+            $this->debugLog('easytransac debug saved messages', json_encode($a));
+        }
+		return $result;
 	}
 
     /**
