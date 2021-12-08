@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="ec234a2ac7acc640c6b795c71e4ad8c6">
+        <source>Payment in instalments completed</source>
+        <target>Payment in instalments completed</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6b804acc24887be2487ee67d55c48eed">
+        <source>Payment in instalments</source>
+        <target>Payment in instalments</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ea397fa1032ee2c3a2eb37aeea8081df">
+        <source>Price paid on EasyTransac is not the same as on Prestashop</source>
+        <target>Price paid on EasyTransac is not the same as on Prestashop</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5c05ddf9709cfb4884a20b6328bcd0bc">
+        <source>One Click payment processed</source>
+        <target>One Click payment processed</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="b44e30cf2f3f8c2ce05db035ab0c2ca6">
+        <source>Price paid on EasyTransac is not the same that on Prestashop - Transaction : </source>
+        <target>Price paid on EasyTransac is not the same that on Prestashop - Transaction : </target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="75ab54de263e8bb786d432340d84739a">
+        <source>Credit card payment via EasyTransac</source>
+        <target>Paiement par carte bancaire (EasyTransac)</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="2f4f3508024221569e0d0feb193ff5ce">
+        <source>Website payment service</source>
+        <target>Paiement par carte bancaire.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="876f23178c29dc2552c0b48bf23cd9bd">
+        <source>Are you sure you want to uninstall?</source>
+        <target>Êtes-vous sûr de vouloir désinstaler?</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="bb5326ff233005e3b9d6a38f8141d55d">
+        <source>No API key provided</source>
+        <target>La clé d'API n'a pas été renseignée</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c888438d14855d7d96a2724ee9c306bd">
+        <source>Settings updated</source>
+        <target>Les paramètres ont été mis à jour</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="86c7a13327fdd3f2c90afaac26595b74">
+        <source>[OK] OpenSSL version</source>
+        <target>[OK] version d'OpenSSL</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="22d394dfb252203f415ddb14ff651bae">
+        <source>[ERROR] OpenSSL version not supported</source>
+        <target>[ERROR] La version d'OpenSSL n'est pas supportée </target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9949d1298a3d480f44beeb1981b21747">
+        <source>[OK] cURL is installed</source>
+        <target>[OK] cURL est installé</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="9017416d6df6297c1b62277c950169b1">
+        <source>[ERROR] PHP cURL extension missing</source>
+        <target>[ERREUR] l'extension PHP cURL est manquante</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="61edb2700c0cd79c0ace1389234fa1ee">
+        <source>[OK] Latest module version installed</source>
+        <target>[OK] La dernière version du module est installée</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="3fc6c8d82628bc69ae8bf52918e4ea52">
+        <source>[ERROR] New module is available on www.easytransac.com</source>
+        <target>[INFO] Une nouvelle version du module est disponible sur www.easytransac.com</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f4f70727dc34561dfde1a3c529b6205c">
+        <source>Settings</source>
+        <target>Paramètres</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5a2ebfb8baa378cfcfcba58bbb1380c2">
+        <source>Requirements</source>
+        <target>Éléments requis</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="2e5e61c17add3609c6786a4c9ce1a279">
+        <source>Api Key</source>
+        <target>Clé d'API </target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="bd81a5e203876503df7e2ac6b04f6c1b">
+        <source><![CDATA[Your Easytransac application API Key is available in your back office in E-commerce > Applications.]]></source>
+        <target><![CDATA[Votre clé d'API Easytransac, disponible sur votre espace client dans E-commerce > Applications.]]></target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="a2b787ad97ab6f553dded04fc19dab01">
+        <source>Notification URL</source>
+        <target>URL de notification</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="cb664514b802ab38b8cae3092c6cf15f">
+        <source>Notification URL to copy paste in your EasyTransac appplication settings</source>
+        <target><![CDATA[Saisissez cette URL sur votre espace client, dans la partie E-commerce > Applications puis en cliquant sur \"Editer\".]]></target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="302e197c5035435162398179ab21cbf5">
+        <source>One Click Payment</source>
+        <target>Paiements en 1 clic</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f611890ac19b437ed2d695b7637f09ae">
+        <source>The credit card is stored for future payments.</source>
+        <target>La carte bancaire du client est sauvegardée pour de futurs paiements.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="00d23a76e43b46dae9ec7aa9dcbebb32">
+        <source>Enabled</source>
+        <target>Activé</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="b9f5c797ebbf55adccdd8539a65a0241">
+        <source>Disabled</source>
+        <target>Désactivé</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="62b4f2a26a5b93517fe4969b1d65e40c">
+        <source>Enable payment in 2 instalments</source>
+        <target>Paiement en 2x</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e9a3f1e656f5e442bae355f2be7aa6fe">
+        <source>Enable payment in 3 instalments</source>
+        <target>Paiement en 3x</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="273f38f4ec0d6bbe19ca135285a6d04d">
+        <source>Enable payment in 4 instalments</source>
+        <target>Paiement en 4x</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f75c7e1f9457c3b3d51c57289653716c">
+        <source>Icon display</source>
+        <target>Afficher l'icône Easytransac</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="128a0656e807fccb810bcee8d92aede2">
+        <source>Display Easytransac icon at checkout</source>
+        <target>Afficher l'icône Easytransac au client dans la liste des moyens de paiements.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ec3028a12402ab7f43962a6f3a667b6e">
+        <source>Debug mode</source>
+        <target>Debug</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5bfbef02d028605acdfc3881441904b4">
+        <source>Save the transaction log for debugging purpose.</source>
+        <target>Enregistre le log des transactions à des fins de débogage.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="c9cc8cce247e49bae79f15173ce97354">
+        <source>Save</source>
+        <target>Enregistrer</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="630f6dc397fe74e52d5189e2c80f282b">
+        <source>Back to list</source>
+        <target>Retour à la liste</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="5e706a9b7eb9b142a619e4331d6976e6">
+        <source>Visit</source>
+        <target>Veuillez visiter</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ccca9f3b9f1e9719164c4ce1738802e0">
+        <source>in order to create an account and configure your application.</source>
+        <target>afin de créer votre compte et de configurer votre application EasyTransac </target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="25065e3ef9274f9b0e3088340f6d79e6">
+        <source>Pay by credit card</source>
+        <target>Payer par carte bancaire</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="4356264d9b906193b907b5a596a2b39d">
+        <source>No transactions yet.</source>
+        <target>Pas de transaction pour l'instant.</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

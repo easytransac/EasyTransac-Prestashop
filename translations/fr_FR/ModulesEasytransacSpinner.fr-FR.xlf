@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="d6447b79d6bc5dde59bfd72b69dc488e">
+        <source>Your payment is currently being processed.</source>
+        <target>Votre paiement est en cours de traitement.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="50918aa8e5ee2c48f236547845cc4394">
+        <source>Please wait for EasyTransac payment confirmation...</source>
+        <target>Veuillez attendre la confirmation de paiement d'Easytransac</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

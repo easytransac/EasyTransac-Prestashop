@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="a40cab5994f36d4c48103a22ca082e8f">
+        <source>Your shopping cart</source>
+        <target>Votre panier</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="1d7d452aefd53cb905743fdf611a9306">
+        <source>EasyTransac</source>
+        <target>EasyTransac</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="f47106270a2928f350f357e255a2c2ac">
+        <source>Please try to contact the merchant:</source>
+        <target>Merci de contacter le marchand:</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="0557fa923dcee4d0f86b1409f5c2167f">
+        <source>Back</source>
+        <target>Retour</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

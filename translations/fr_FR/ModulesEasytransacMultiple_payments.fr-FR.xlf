@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="a38ed59ae215a5e799065e0c8c7791f2">
+        <source>Recurrence</source>
+        <target>Recurrence</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="6b804acc24887be2487ee67d55c48eed">
+        <source>Payment in instalments</source>
+        <target>Paiement en plusieurs fois</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="794a84d799ba259008e1ab4da089b0ae">
+        <source>Pay in 2 times</source>
+        <target>Payer en 2 fois</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="bb9be692a920f347a0273ab51442a61e">
+        <source>Pay in 3 times</source>
+        <target>Payer en 3 fois</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="b9f4ca4ebe2f9bf614036cd5f8587171">
+        <source>Pay in 4 times</source>
+        <target>Payer en 4 fois</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

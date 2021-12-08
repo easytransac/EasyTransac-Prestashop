@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="f403ac95a07ddae169d88c4833ace3ce">
+        <source>Thank you for your order!</source>
+        <target>Merci pour votre commande</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="e6dc7945b557a1cd949bea92dd58963e">
+        <source>Your order will be sent very soon.</source>
+        <target>Votre commande sera livrée bientôt.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="0db71da7150c27142eef9d22b843b4a9">
+        <source>For any questions or for further information, please contact our</source>
+        <target>Pour toute demande d'information, merci de contacter notre</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="64430ad2835be8ad60c59e7d44e4b0b1">
+        <source>customer support</source>
+        <target>service client</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="443ba7035e96aec889ff125c09c8e18a">
+        <source>Your payment was canceled.</source>
+        <target>Votre paiement a été annulé.</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="2e2117b7c81aa9ea6931641ea2c6499f">
+        <source>Your order on</source>
+        <target>Votre commande du </target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="ecaa952cb16a3aa256995cee0ccdee54">
+        <source>is currently being processed.</source>
+        <target>est en cours de traitement</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="50918aa8e5ee2c48f236547845cc4394">
+        <source>Please wait for EasyTransac payment confirmation...</source>
+        <target>Veuillez attendre la confirmation du paiement par EasyTransac</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

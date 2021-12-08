@@ -9,7 +9,6 @@ var ETOneClick = function () {
 
         // Double load failsafe.
         var session_id = 'easytransac-oneclick' + Date.now();
-        console.log('here');
 
         // Creates workspace.
         $('#easytransac-namespace').append($('<div id="' + session_id + '" class="payment_box payment_method_easytransac">'));

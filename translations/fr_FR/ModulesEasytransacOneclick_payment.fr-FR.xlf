@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="admin515gxde2j" source-language="fr-FR" target-language="fr-FR" datatype="plaintext">
+    <body>
+      <trans-unit id="95552c6d802066c1fc546b3f7fe7b1f7">
+        <source>One click payment</source>
+        <target>Paiement en 1 clic</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="b22528f7f0c20d75a9a3f951a58dd72b">
+        <source>Choose a card</source>
+        <target>Sélectionnez une carte bancaire</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="8bd4837a76cf443ab523a51895e23c36">
+        <source>Pay now</source>
+        <target>Payer maintenant</target>
+        <note>Line: </note>
+      </trans-unit>
+      <trans-unit id="8fd89eaea3816dc99d21701581e0800a">
+        <source>Please wait ...</source>
+        <target>Merci de patienter quelques instants ...</target>
+        <note>Line: </note>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

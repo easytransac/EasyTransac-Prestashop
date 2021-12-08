@@ -44,18 +44,16 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 			return;
 		}
 
-		$transactionItem = $response->getContent();
+		/* @var  $doneTransaction \EasyTransac\Entities\DoneTransaction */
+		$doneTransaction = $response->getContent();
 
-		$url = $transactionItem->getSecureUrl();
+		$url = $doneTransaction->getSecureUrl();
 		if($url){
 			echo json_encode(array(
 				'redirect_page' => $url,
 			));
 			return;
 		}
-
-		/* @var  $doneTransaction \EasyTransac\Entities\DoneTransaction */
-		$doneTransaction = $response->getContent();
 
 		$this->module->create_easytransac_order_state();
 
@@ -134,6 +132,15 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 		if ('failed' != $doneTransaction->getStatus())
 		{
 			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $mailVars = array(), null, false, $customer->secure_key);
+
+			$existing_order_id = OrderCore::getOrderByCartId($cart->id);
+
+			# for Prestashop >= 1.7.7
+			$this->module->addTransactionMessage(
+				$existing_order_id,
+				$doneTransaction->getTid(), 
+				$this->module->l('One Click payment processed').': '.$doneTransaction->getStatus(),
+				$doneTransaction->getAmount() *100);
 		}
 		$this->module->debugLog('OneClick Order validated');
 

@@ -33,19 +33,29 @@
         </tr>
       </thead>
       <tbody>
+
+{foreach from=$history item=item}
         <tr class="d-print-none">
           <td>
+          {$item['date']}
           </td>
 
           <td>
+          {$item['message']}
           </td>
 
           <td>
+          {$item['external_id']}
           </td>
 
           <td>
+          {if $item['amount'] != 0}
+            {$item['amount']} €
+          {/if}
           </td>
         </tr>
+ {/foreach}
+      
       </tbody>
     </table>
 

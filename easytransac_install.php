@@ -16,6 +16,10 @@ class EasyTransacInstall
 		Configuration::updateValue('EASYTRANSAC_API_KEY', 0);
 		Configuration::updateValue('EASYTRANSAC_DEBUG', 0);
 		Configuration::updateValue('EASYTRANSAC_ONECLICK', 0);
+		Configuration::updateValue('EASYTRANSAC_MULTIPAY', 0);
+		Configuration::updateValue('EASYTRANSAC_MULTIPAY2X', 0);
+		Configuration::updateValue('EASYTRANSAC_MULTIPAY3X', 0);
+		Configuration::updateValue('EASYTRANSAC_MULTIPAY4X', 0);
 	}
 	
 	/**
@@ -56,7 +60,7 @@ class EasyTransacInstall
 			`message` VARCHAR(256) NOT NULL,
 			`external_id` VARCHAR(20) NOT NULL,
 			`amount` int(10) NULL,
-			PRIMARY KEY (`id_order`)
+			INDEX (`id_order`)
 		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')) {
             return false;
         }
@@ -69,6 +73,7 @@ class EasyTransacInstall
 	{
 		Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_customer`;');
 		Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_transaction`;');
-		// Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_message`;');
+		Db::getInstance()->Execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.'easytransac_message`;');
 	}
+	
 }

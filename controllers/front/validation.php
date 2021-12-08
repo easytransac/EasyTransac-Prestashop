@@ -46,5 +46,4 @@ class EasyTransacValidationModuleFrontController extends ModuleFrontController
 		}
 		return;
 	}
-
 }

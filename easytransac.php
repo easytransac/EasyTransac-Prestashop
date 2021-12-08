@@ -16,7 +16,7 @@ class EasyTransac extends PaymentModule
     /**
      * Development variable.
      */
-    private $debugLogEnabled = true;
+    private $debugLogEnabled = false;
 
     /**
      * Module init.
@@ -519,7 +519,7 @@ class EasyTransac extends PaymentModule
      * Returns whether the customer has already paid via Easytransac.
      * @return bool
      */
-    private function isCustomerKnown(){
+    public function isCustomerKnown(){
         $client_id = $this->context->customer->getClient_id();
         return !empty($client_id);
     }
@@ -591,8 +591,9 @@ class EasyTransac extends PaymentModule
             return;
         }
 
-        parent::validateOrder((int)$id_cart, (int)$id_order_state, (float)$amount_paid,
-                                $payment_method, $message, $transaction, $currency_special,
+        parent::validateOrder((int)$id_cart, (int)$id_order_state,
+                                (float)$amount_paid, $payment_method, 
+                                $message, $transaction, $currency_special,
                                 $dont_touch_amount, $secure_key, $shop);
     }
 
@@ -664,6 +665,24 @@ class EasyTransac extends PaymentModule
 
     // Hook for Prestashop version >= 1.7.7 for a block on order page.
     public function hookDisplayAdminOrderTabContent($params){
+        $this->loginit();
+
+//                 /** @var array $result */
+        // $result = Db::getInstance()->ExecuteS('SHOW CREATE TABLE '. _DB_PREFIX_.'easytransac_message;');
+// var_dump($result);
+        // $notice = json_encode($result);
+//         $this->debugLog('create table', json_decode($result));
+
+        // $existing_order_id = OrderCore::getOrderByCartId($params['id_order']);
+		// $existing_order = new Order($params['id_order']);
+
+        // $existing_order->setCurrentState(2);
+
+        // $this->addTransactionMessage(
+        //     $params['id_order'],
+        //     'TESTMSG', 
+        //     'TESTMSG'
+        // );
 
         // # Display transaction's saved messages.
         $items = $this->getTransactionMessages($params['id_order']);
@@ -671,22 +690,25 @@ class EasyTransac extends PaymentModule
         $notice = $this->l('No transactions yet.');
         $show_history = false;
 
-        // if(0){
+        // $notice = $this->fetchStatus($params['id_order']);
+
+        $history = [];
         if(!empty($params)){
 
-            $buffer = [];
             foreach ($items as $item) {
-                $buffer[] = implode(', ', $item);
+                $item['amount'] = number_format($item['amount']/100, 2, '.', '');
+                $history[] = $item;
                 $show_history = true;
             }
-            if($buffer){
-                $notice = implode('<br/>', $buffer);
+            if($history){
+                $notice = '';
             }
         }
         
         $vars = [
             'notice' => $notice,
             'show_history' => $show_history,
+            'history' => $history,
         ];
 
         $this->context->smarty->assign($vars);
@@ -807,15 +829,14 @@ class EasyTransac extends PaymentModule
 
     /**
      * Save the transaction message.
-     * @return bool
      */
 	function addTransactionMessage($order_id, $transaction_id, $message, $amount=null)
 	{
         # amount can be null.
-        $amount = 'NULL';
+        $save_amount = 'NULL';
 
         if($amount !== null){
-            $amount = intval($amount);
+            $save_amount = intval($amount);
         }
 
         # message max size.
@@ -828,9 +849,7 @@ class EasyTransac extends PaymentModule
         $db = \Db::getInstance();
 
 		$db->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_message` '
-				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $transaction_id . '\', ' . $amount . ')');
-        
-        return $db->Affected_Rows() > 0;
+				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $transaction_id . '\', ' . $save_amount . ')');
 	}
 
     /**
@@ -841,11 +860,12 @@ class EasyTransac extends PaymentModule
 	{
         /** @var array $result */
         $result = Db::getInstance()->ExecuteS('SELECT * FROM `' . _DB_PREFIX_ 
-                                            . 'easytransac_message`');
+                                            . 'easytransac_message` WHERE id_order = '.intval($order_id));
 
         if($this->debugLogEnabled){
-            $this->debugLog('easytransac debug saved messages', json_encode($a));
+            $this->debugLog('easytransac debug saved messages', json_encode($result));
         }
+        
 		return $result;
 	}
 
@@ -866,7 +886,7 @@ class EasyTransac extends PaymentModule
     }
 
     /**
-     * Helper to add a message to an order
+     * Helper to add a message to an order.
      * @return void
      */
     public function addOrderMessage($order_id, $message){
@@ -877,5 +897,49 @@ class EasyTransac extends PaymentModule
         $msg->add();
         $this->debugLog('Message added to order '
                         .$order_id, $message);
+    }
+
+    /**
+	 * Call payment status endpoint.
+	 * @return false|string Returns transaction status string.
+	 */
+	public function fetchStatus($order_id){
+        $this->debugLog('PaymentStatus status', 'in fetch function');
+		try
+		{
+            EasyTransac\Core\Services::getInstance()
+                ->provideAPIKey(Configuration::get('EASYTRANSAC_API_KEY'));
+            $entity = (new EasyTransac\Entities\PaymentStatus())
+                        ->setOrderId($order_id);
+
+            $request = new EasyTransac\Requests\PaymentStatus();
+            $response = $request->execute($entity);
+
+			if (!$response){
+				throw new Exception('empty response');
+            }
+
+            if($response->getErrorMessage()){
+                throw new Exception($response->getErrorMessage());
+            }
+		}
+		catch (Exception $exc)
+		{
+			$this->debugLog('Fetch PaymentStatus error', $exc->getMessage());
+			error_log('EasyTransac error: ' . $exc->getMessage());
+			return false;
+		}
+
+		$status = $response->getContent();
+		$this->debugLog('PaymentStatus status', $status->getStatus());
+		return $status->getStatus();
+	}
+
+    /**
+     * Enable Prestashop v1.7.8 new translation system.
+     */
+    public function isUsingNewTranslationSystem()
+    {
+        return true;
     }
 }

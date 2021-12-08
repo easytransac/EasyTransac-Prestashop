@@ -19,8 +19,9 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		{
 			$response = \EasyTransac\Core\PaymentNotification::getContent($_POST, Configuration::get('EASYTRANSAC_API_KEY'));
 
-			if (!$response)
+			if (!$response){
 				throw new Exception('empty response');
+			}
 		}
 		catch (Exception $exc)
 		{
@@ -79,7 +80,9 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				break;
 		}
 
-		$this->module->debugLog('Notification for OrderId : ' . $response->getOrderId() . ', Status: ' . $response->getStatus() . ', Prestashop Status: ' . $payment_status);
+		$this->module->debugLog('Notification for OrderId : ' . $response->getOrderId() 
+		. ', Status: ' . $response->getStatus() . ', Prestashop Status: ' . $payment_status);
+		$this->module->debugLog('Notification amount : ' . 100*$response->getAmount());
 
 		// Checks that paid amount matches cart total.
 		$paid_total = number_format($response->getAmount(), 2, '.', '');
@@ -91,29 +94,30 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		// Useful if amount doesn't match and it's an update.
 		$original_new_state = $payment_status;
 
-		// Multiple payments.
 		$multipay = [
-			'ismulti' => $_POST['MultiplePayments'],
-			'status'	=> $_POST['MultiplePaymentsStatus'],
-			'repeat'  => $_POST['MultiplePaymentsRepeat'],
-			'count'   => $_POST['MultiplePaymentsCount'],
+			'ismulti' => 'no',
 		];
+
+		// Multiple payments.
+		if(isset($_POST['MultiplePayments']) && isset($_POST['MultiplePaymentsStatus']) ){
+
+			$multipay = [
+				'ismulti' => $_POST['MultiplePayments'],
+				'status'	=> $_POST['MultiplePaymentsStatus'],
+				'repeat'  => $_POST['MultiplePaymentsRepeat'],
+				'count'   => $_POST['MultiplePaymentsCount'],
+			];
+		}
 
 		# Whether this transaction is part of a payment in instalments.
 		$is_payment_in_instalment = $multipay['ismulti'] == 'yes';
 
 		# Whether this transaction is the last one of
 		# a payment in instalments.
+		$is_instalment_completed = false;
 		if($is_payment_in_instalment){
-			$is_instalment_completed = $multipay['count'] == $multipay['repeat'];
+			$is_instalment_completed = $multipay['status'] == 'yes';
 		}
-
-		// $multipay = [
-		// 	'ismulti' => $transactionItem->getMultiplePayments(),
-		// 	'status'	=> $transactionItem->getMultiplePaymentsStatus(),
-		// 	'repeat'  => $transactionItem->getMultiplePaymentsRepeat(),
-		// 	'count'   => $transactionItem->getMultiplePaymentsCount(),
-		// ];
 
 		$this->module->debugLog('Multipay: '.implode(', ', $multipay));
 
@@ -121,8 +125,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		if (!$amount_match && 2 == $payment_status && ! $is_payment_in_instalment)
 		{
 			$payment_message = 
-				$this->l('Price paid on EasyTransac is not the same as on Prestashop - Transaction : ')
-				. $response->getTid();
+				$this->l('Price paid on EasyTransac is not the same as on Prestashop')
+				. ' - Tid: ' . $response->getTid();
 
 			$payment_status = 8;
 			$this->module->debugLog('Notification Amount mismatch');
@@ -132,7 +136,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		if($is_payment_in_instalment && $payment_status == 2){
 
 			$payment_message = $this->l('Payment in instalments')
-					. sprintf(' %d/%d', $multipay['count'], $multipay['repeat']);
+					. sprintf(' %d/%d', $multipay['count'], $multipay['repeat'])
+					. ' : ' . $response->getMessage();
 
 			$payment_status = $this->module->get_split_payment_state();
 			$this->module->debugLog('Notification Order set to PAYMENT IN INSTALMENTS STATE');
@@ -154,13 +159,14 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			$this->module->validateOrder($cart->id, $payment_status, $total_paid_float, $this->module->displayName, $payment_message, $extra_vars, null, false, $customer->secure_key);
 
 			$this->module->debugLog('Notification Order saved');
+			$this->module->debugLog('Amount', $response->getAmount() *100);
 
 			$existing_order_id = OrderCore::getOrderByCartId($cart->id);
 
 			# former Prestashop 1.7.0 version
 			$this->module->addOrderMessage($existing_order_id, $payment_message);
 
-						# for Prestashop >= 1.7.7
+			# for Prestashop >= 1.7.7
 			$this->module->addTransactionMessage(
 											$existing_order_id,
 											$response->getTid(), 
@@ -171,34 +177,22 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 
 
-		if (((int) $existing_order->current_state != 2 
-				  || (int) $payment_status == 7)
-				&& (int) $existing_order->current_state != (int) $original_new_state)
-		{
-			// Updating the order's state only if current state is not captured
-			// or if target state is refunded
-			$existing_order->setCurrentState($payment_status);
 
-			$this->module->addOrderMessage($existing_order->id, $payment_message);
-
-			$this->module->debugLog('Notification : order state changed to', $payment_status);
-		}
-		elseif ($is_payment_in_instalment) {
+		if ($is_payment_in_instalment) {
 			/**
 			 * Payment in instalments process.
 			 */
+			$this->module->debugLog('Payment in instalments processing');
+
 			$this->module->addOrderMessage($existing_order->id, $payment_message);
 
-			# for Prestashop >= 1.7.7
-			$this->module->addTransactionMessage(
-											$existing_order_id,
-											$response->getTid(), 
-											$payment_message,
-											$response->getAmount() *100);
 
 			// Last instalment.
 			if($is_instalment_completed){
+
 				$completed_notice = $this->l('Payment in instalments completed');
+
+				$this->module->debugLog('Payment in instalments completed');
 
 				# Complete payment order status.
 				$existing_order->setCurrentState(2);
@@ -211,7 +205,26 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 					$response->getTid(),
 					$completed_notice,
 					$response->getAmount() *100);
+			}else{
+				# for Prestashop >= 1.7.7
+				$this->module->addTransactionMessage(
+					$existing_order_id,
+					$response->getTid(), 
+					$payment_message,
+					$response->getAmount() *100);
 			}
+		}
+		elseif (((int) $existing_order->current_state != 2 
+				|| (int) $payment_status == 7)
+				&& (int) $existing_order->current_state != (int) $original_new_state)
+		{
+			// Updating the order's state only if current state is not captured
+			// or if target state is refunded
+			$existing_order->setCurrentState($payment_status);
+
+			$this->module->addOrderMessage($existing_order->id, $payment_message);
+
+			$this->module->debugLog('Notification : order state changed to', $payment_status);
 		}
 		else
 		{
