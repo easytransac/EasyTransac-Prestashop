@@ -7,10 +7,6 @@
   <div class="card-body">
     
     <div class="form-group row type-hidden ">
-    
-        
-    
-          
       
       <label for="order_payment__token" class="form-control-label ">
                 
@@ -26,10 +22,15 @@
   </div><table class="table">
       <thead>
         <tr>
-          <th class="table-head-date">Date</th>
-          <th class="table-head-message">message</th>
-          <th class="table-head-transaction">Transaction ID</th>
-          <th class="table-head-amount">Amount</th>
+          <th class="table-head-date">
+          	{l s='Date' mod='easytransac'}
+          </th>
+          <th class="table-head-message">
+          	{l s='Message' mod='easytransac'}</th>
+          <th class="table-head-transaction">
+          	{l s='Transaction ID' mod='easytransac'}</th>
+          <th class="table-head-amount">
+          	{l s='Amount' mod='easytransac'}</th>
         </tr>
       </thead>
       <tbody>

@@ -68,7 +68,6 @@ class EasyTransac extends PaymentModule
     {
         if (!parent::install() || 
             !$this->registerHook('paymentOptions') || 
-            !$this->registerHook('paymentReturn') || 
             !$this->registerHook('actionFrontControllerSetMedia') ||
             !$this->registerHook('actionOrderSlipAdd') ||
             !$this->registerHook('displayAdminOrderTabContent')
@@ -486,7 +485,11 @@ class EasyTransac extends PaymentModule
                                         'module:easytransac/views/templates/hook/oneclick_payment.tpl');
         }
 
-        if (Configuration::get('EASYTRANSAC_MULTIPAY'))
+        $cart = $this->context->cart;
+		$total = 100 * $cart->getOrderTotal(true, Cart::BOTH);
+
+        if (Configuration::get('EASYTRANSAC_MULTIPAY')
+            && $total >= 5000)
         {
             if($buffer){
                 $buffer[] = '<br/>';
@@ -543,37 +546,6 @@ class EasyTransac extends PaymentModule
                 return $this->display(__FILE__, $views . 'admin/' . $name);
         }
         return $this->display(__FILE__, $name);
-    }
-
-    /**
-     * Return from EasyTransac and validation.
-     */
-    public function hookPaymentReturn()
-    {
-        if (!$this->active)
-        {
-            return null;
-        }
-
-        $this->create_easytransac_order_state();
-        $et_pending = $this->get_pending_payment_state();
-
-        $existing_order = !empty($_GET['id_order']) ? new Order($_GET['id_order']) : null;
-
-        if (empty($existing_order->id) || empty($existing_order->current_state)){
-            $existing_order->current_state = $et_pending;
-        }
-
-        // 2: payment accepted, 6: canceled, 7: refunded, 8: payment error,
-        // 12: remote payment accepted
-        $current_state = (int)$existing_order->current_state;
-        $this->context->smarty->assign(array(
-            'isPending' => $current_state === $et_pending,
-            'isCanceled' => $current_state === 6 || $current_state === 8,
-            'isAccepted' => $current_state === 2,
-        ));
-        $this->debugLog('TPL', 'Calling confirmation tpl');
-        return $this->fetch('module:easytransac/views/templates/hook/confirmation.tpl');
     }
 
     /**
@@ -714,7 +686,7 @@ class EasyTransac extends PaymentModule
         $this->context->smarty->assign($vars);
 
         return $this->context->smarty->fetch(
-                    'module:easytransac/views/templates/hook/admin_order_tab.tpl');
+                    'module:easytransac/views/templates/hook/adminordertab.tpl');
     }
 
     /**
@@ -940,6 +912,6 @@ class EasyTransac extends PaymentModule
      */
     public function isUsingNewTranslationSystem()
     {
-        return true;
+        return false;
     }
 }

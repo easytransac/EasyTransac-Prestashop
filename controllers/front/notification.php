@@ -15,9 +15,15 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$this->module->debugLog('Start Notification');
 		$this->module->debugLog('Data POST', var_export($_POST, true));
 
+		$endpoint_response = sprintf('Presta %s Module %s  -OK',
+																 _PS_VERSION_,
+																 $this->module->version);
+
 		try
 		{
-			$response = \EasyTransac\Core\PaymentNotification::getContent($_POST, Configuration::get('EASYTRANSAC_API_KEY'));
+			$response = \EasyTransac\Core\PaymentNotification::getContent(
+											$_POST,
+											Configuration::get('EASYTRANSAC_API_KEY'));
 
 			if (!$response){
 				throw new Exception('empty response');
@@ -25,21 +31,23 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 		catch (Exception $exc)
 		{
-			$this->module->debugLog('Notification error', $exc->getMessage());
+			$this->module->debugLog('Notification error', 
+															$exc->getMessage());
 			error_log('EasyTransac error: ' . $exc->getMessage());
-			die;
+			exit;
 		}
 
 		$transactionItem = $response->getContent();
 
-		$this->module->debugLog('Notification for Tid', $response->getTid());
+		$this->module->debugLog('Notification for Tid', 
+														$response->getTid());
 		$this->module->create_easytransac_order_state();
 		$cart = new Cart($response->getOrderId());
 
 		if (empty($cart->id))
 		{
 			Logger::AddLog('EasyTransac: Unknown Cart id');
-			die;
+			exit;
 		}
 		$customer = new Customer($cart->id_customer);
 
@@ -49,8 +57,13 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$this->module->debugLog('Notification cart id', $response->getOrderId());
 		$this->module->debugLog('Notification order id from cart', $existing_order_id);
 		$this->module->debugLog('Notification customer', $existing_order->id_customer);
+
+		$this->module->debugLog('Notification customer secure_key', '');
+		$this->module->debugLog('Notification customer secure_key', $customer->secure_key);
+
 		$this->module->debugLog('Notification client ID', $response->getClient()->getId());
-		$this->module->debugLog('save tid - orderId', $response->getOrderId().' - '.$response->getTid());
+		$this->module->debugLog('save tid - orderId', 
+														$response->getOrderId().' - '.$response->getTid());
 		
 		# Saves Easytransac transaction id.
 		
@@ -80,8 +93,12 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				break;
 		}
 
-		$this->module->debugLog('Notification for OrderId : ' . $response->getOrderId() 
-		. ', Status: ' . $response->getStatus() . ', Prestashop Status: ' . $payment_status);
+		$this->module->debugLog(
+			sprintf('Notification for OrderId : %d, Status: %s, Prestashop Status: %s',
+							$response->getOrderId(),
+							$response->getStatus(),
+							$payment_status));
+
 		$this->module->debugLog('Notification amount : ' . 100*$response->getAmount());
 
 		// Checks that paid amount matches cart total.
@@ -89,17 +106,20 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		$cart_total = number_format($cart->getOrderTotal(true, Cart::BOTH), 2, '.', '');
 		$amount_match = $paid_total === $cart_total;
 
-		$this->module->debugLog('Notification Paid total: ' . $paid_total . ' prestashop price: ' . $cart_total);
+		$this->module->debugLog(
+				sprintf('Notification Paid total: %d, prestashop price: %d',
+								$paid_total, $cart_total));
 
 		// Useful if amount doesn't match and it's an update.
 		$original_new_state = $payment_status;
 
+		// Payment in instalments.
 		$multipay = [
 			'ismulti' => 'no',
 		];
 
-		// Multiple payments.
-		if(isset($_POST['MultiplePayments']) && isset($_POST['MultiplePaymentsStatus']) ){
+		if(isset($_POST['MultiplePayments']) 
+			 && isset($_POST['MultiplePaymentsStatus']) ){
 
 			$multipay = [
 				'ismulti' => $_POST['MultiplePayments'],
@@ -112,16 +132,18 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		# Whether this transaction is part of a payment in instalments.
 		$is_payment_in_instalment = $multipay['ismulti'] == 'yes';
 
-		# Whether this transaction is the last one of
-		# a payment in instalments.
 		$is_instalment_completed = false;
 		if($is_payment_in_instalment){
-			$is_instalment_completed = $multipay['status'] == 'yes';
+
+			# Whether this transaction is the last one of
+			# a payment in instalments.
+			$is_instalment_completed = $multipay['status'] == 'done';
+
+			$this->module->debugLog('Multipay: '.implode(', ', $multipay));
+			$this->module->debugLog('If instalment completed: '.$is_instalment_completed);
 		}
 
-		$this->module->debugLog('Multipay: '.implode(', ', $multipay));
-
-		// A standard payment's transaction amount must match order amount.
+		// Transaction amount must match order amount.
 		if (!$amount_match && 2 == $payment_status && ! $is_payment_in_instalment)
 		{
 			$payment_message = 
@@ -144,10 +166,6 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 
 		$this->module->debugLog('Payment status', $payment_status);
-
-		// Appends transaction id to order message.
-		// $payment_message = sprintf('%s - Tid: %s', $payment_message, 
-		// 														$response->getTid());
 
 		// First order process.
 		if (empty($existing_order->id) || empty($existing_order->current_state))
@@ -173,10 +191,9 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 											$payment_message,
 											$response->getAmount() *100);
 
-			die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
+			echo $endpoint_response;
+			exit;
 		}
-
-
 
 		if ($is_payment_in_instalment) {
 			/**
@@ -184,13 +201,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			 */
 			$this->module->debugLog('Payment in instalments processing');
 
-			$this->module->addOrderMessage($existing_order->id, $payment_message);
-
-
 			// Last instalment.
 			if($is_instalment_completed){
-
-				$completed_notice = $this->l('Payment in instalments completed');
 
 				$this->module->debugLog('Payment in instalments completed');
 
@@ -198,14 +210,25 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				$existing_order->setCurrentState(2);
 
 				$this->module->addOrderMessage($existing_order->id,
-																			 $completed_notice);
+																			 $payment_message);
 
 				$this->module->addTransactionMessage(
 					$existing_order_id,
 					$response->getTid(),
-					$completed_notice,
+					$payment_message,
 					$response->getAmount() *100);
+
+				$completed_notice = $this->l('Payment in instalments completed');
+				
+				// Completed notice.
+				$this->module->addTransactionMessage(
+					$existing_order_id,
+					$response->getTid(),
+					$completed_notice);
+
 			}else{
+				$this->module->addOrderMessage($existing_order->id, $payment_message);
+
 				# for Prestashop >= 1.7.7
 				$this->module->addTransactionMessage(
 					$existing_order_id,
@@ -234,7 +257,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 		$this->module->debugLog('Notification End of Script');
 
-		die('Presta '._PS_VERSION_.' Module ' . $this->module->version . '-OK');
+		echo $endpoint_response;
+		exit;
 	}
 
 }

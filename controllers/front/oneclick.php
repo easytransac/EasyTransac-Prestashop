@@ -139,7 +139,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 			$this->module->addTransactionMessage(
 				$existing_order_id,
 				$doneTransaction->getTid(), 
-				$this->module->l('One Click payment processed').': '.$doneTransaction->getStatus(),
+				$this->l('One Click payment processed').': '.$doneTransaction->getStatus(),
 				$doneTransaction->getAmount() *100);
 		}
 		$this->module->debugLog('OneClick Order validated');
