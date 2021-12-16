@@ -58,6 +58,7 @@ class EasyTransacInstall
 			`id_order` int(10) unsigned NOT NULL,
 			`date` DATETIME NOT NULL,
 			`message` VARCHAR(256) NOT NULL,
+			`status` VARCHAR(20) NOT NULL,
 			`external_id` VARCHAR(20) NOT NULL,
 			`amount` int(10) NULL,
 			INDEX (`id_order`)

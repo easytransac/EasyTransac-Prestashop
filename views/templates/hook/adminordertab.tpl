@@ -25,8 +25,13 @@
           <th class="table-head-date">
           	{l s='Date' mod='easytransac'}
           </th>
+
           <th class="table-head-message">
           	{l s='Message' mod='easytransac'}</th>
+
+          <th class="table-head-message">
+          	{l s='Status' mod='easytransac'}</th>
+
           <th class="table-head-transaction">
           	{l s='Transaction ID' mod='easytransac'}</th>
           <th class="table-head-amount">
@@ -43,6 +48,10 @@
 
           <td>
           {$item['message']}
+          </td>
+
+          <td>
+          {$item['status']}
           </td>
 
           <td>

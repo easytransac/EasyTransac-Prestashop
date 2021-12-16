@@ -780,7 +780,7 @@ class EasyTransac extends PaymentModule
     /**
      * Save the transaction message.
      */
-	function addTransactionMessage($order_id, $transaction_id, $message, $amount=null)
+	function addTransactionMessage($order_id, $transaction_id, $message, $amount=null, $status='')
 	{
         # amount can be null.
         $save_amount = 'NULL';
@@ -790,17 +790,39 @@ class EasyTransac extends PaymentModule
         }
 
         # message max size.
+        $message = strip_tags($message);
         if(strlen($message) > 255){
-            $message = strip_tags($message);
             $message = substr($message, 0, 250);
+        }
+
+        # status max size.
+        $status = strip_tags($status);
+        if(strlen($status) > 20){
+            $status = substr($status, 0, 19);
         }
 
         /** @var \Db $db */
         $db = \Db::getInstance();
 
 		$db->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_message` '
-				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $transaction_id . '\', ' . $save_amount . ')');
+				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $status . '\', \'' . $transaction_id . '\', ' . $save_amount . ')');
 	}
+
+    /**
+     * Helper function to translate a transaction's capture status.
+     * @return string
+     */
+    function translateStatus($status){
+        
+        if(strtolower($status) == 'captured'){
+            $this->debugLog('translate', $this->l('Success'));
+            return $this->l('Success');
+        }elseif(strtolower($status) == 'failed'){
+            $this->debugLog('translate', $this->l('Failure'));
+            return $this->l('Failure');
+        }
+        return $status;
+    }
 
     /**
      * Return the saved transaction messages for an order.
@@ -811,6 +833,10 @@ class EasyTransac extends PaymentModule
         /** @var array $result */
         $result = Db::getInstance()->ExecuteS('SELECT * FROM `' . _DB_PREFIX_ 
                                             . 'easytransac_message` WHERE id_order = '.intval($order_id));
+
+        foreach ($result as &$item){
+            $item['status'] = $this->translateStatus($item['status']);
+        }
 
         if($this->debugLogEnabled){
             $this->debugLog('easytransac debug saved messages', json_encode($result));

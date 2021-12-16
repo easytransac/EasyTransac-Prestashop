@@ -36,6 +36,8 @@ $_MODULE['<{easytransac}prestashop>easytransac_5e706a9b7eb9b142a619e4331d6976e6'
 $_MODULE['<{easytransac}prestashop>easytransac_ccca9f3b9f1e9719164c4ce1738802e0'] = 'afin de créer votre compte et de configurer votre application EasyTransac ';
 $_MODULE['<{easytransac}prestashop>easytransac_25065e3ef9274f9b0e3088340f6d79e6'] = 'Payer par carte bancaire';
 $_MODULE['<{easytransac}prestashop>easytransac_4356264d9b906193b907b5a596a2b39d'] = 'Pas de transaction pour l\'instant.';
+$_MODULE['<{easytransac}prestashop>easytransac_505a83f220c02df2f85c3810cd9ceb38'] = 'Succès';
+$_MODULE['<{easytransac}prestashop>easytransac_e139a585510a502bbf1841cf589f5086'] = 'Echec';
 $_MODULE['<{easytransac}prestashop>oneclick_b44e30cf2f3f8c2ce05db035ab0c2ca6'] = 'Le montant payé sur EasyTransac n\'est pas le même que celui de la transaction Prestashop';
 $_MODULE['<{easytransac}prestashop>oneclick_5c05ddf9709cfb4884a20b6328bcd0bc'] = 'Paiement en 1 clic traité';
 $_MODULE['<{easytransac}prestashop>notification_ea397fa1032ee2c3a2eb37aeea8081df'] = 'Montant payé différent du montant de la commande';
@@ -56,12 +58,17 @@ $_MODULE['<{easytransac}prestashop>multiple_payments_bb9be692a920f347a0273ab5144
 $_MODULE['<{easytransac}prestashop>multiple_payments_b9f4ca4ebe2f9bf614036cd5f8587171'] = 'Payer en 4 fois';
 $_MODULE['<{easytransac}prestashop>adminordertab_44749712dbec183e983dcd78a7736c41'] = 'Date';
 $_MODULE['<{easytransac}prestashop>adminordertab_4c2a8fe7eaf24721cc7a9f0175115bd4'] = 'Message';
+$_MODULE['<{easytransac}prestashop>adminordertab_ec53a8c4f07baed5d8825072c89799be'] = 'Statut';
 $_MODULE['<{easytransac}prestashop>adminordertab_88427ec035734b45aae9f7d8859a5008'] = 'ID transaction';
 $_MODULE['<{easytransac}prestashop>adminordertab_b2f40690858b404ed10e62bdf422c704'] = 'Montant';
 $_MODULE['<{easytransac}prestashop>oneclick_payment_95552c6d802066c1fc546b3f7fe7b1f7'] = 'Paiement en 1 clic';
 $_MODULE['<{easytransac}prestashop>oneclick_payment_b22528f7f0c20d75a9a3f951a58dd72b'] = 'Sélectionnez une carte bancaire';
 $_MODULE['<{easytransac}prestashop>oneclick_payment_8bd4837a76cf443ab523a51895e23c36'] = 'Payer maintenant';
 $_MODULE['<{easytransac}prestashop>oneclick_payment_8fd89eaea3816dc99d21701581e0800a'] = 'Merci de patienter quelques instants ...';
+$_MODULE['<{easytransac}prestashop>admin_order_tab_44749712dbec183e983dcd78a7736c41'] = 'Date';
+$_MODULE['<{easytransac}prestashop>admin_order_tab_4c2a8fe7eaf24721cc7a9f0175115bd4'] = 'Message';
+$_MODULE['<{easytransac}prestashop>admin_order_tab_88427ec035734b45aae9f7d8859a5008'] = 'ID transaction';
+$_MODULE['<{easytransac}prestashop>admin_order_tab_b2f40690858b404ed10e62bdf422c704'] = 'Montant';
 $_MODULE['<{easytransac}prestashop>error_a40cab5994f36d4c48103a22ca082e8f'] = 'Votre panier';
 $_MODULE['<{easytransac}prestashop>error_1d7d452aefd53cb905743fdf611a9306'] = 'EasyTransac';
 $_MODULE['<{easytransac}prestashop>error_f47106270a2928f350f357e255a2c2ac'] = 'Merci de contacter le marchand:';

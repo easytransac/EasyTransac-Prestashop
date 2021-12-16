@@ -140,7 +140,8 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				$existing_order_id,
 				$doneTransaction->getTid(), 
 				$this->l('One Click payment processed').': '.$doneTransaction->getStatus(),
-				$doneTransaction->getAmount() *100);
+				$doneTransaction->getAmount() *100,
+				$doneTransaction->getStatus());
 		}
 		$this->module->debugLog('OneClick Order validated');
 

@@ -189,23 +189,12 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 											$existing_order_id,
 											$response->getTid(), 
 											$payment_message,
-											$response->getAmount() *100);
+											$response->getAmount() *100,
+											$response->getStatus());
 
 			echo $endpoint_response;
 			exit;
 		}
-
-		// # Success with retry after error.
-		// if ((int) $existing_order->current_state == 8
-		// 			  && $response->getStatus() == 'captured'
-		// )
-		// {
-		// 	$this->module->addTransactionMessage(
-		// 		$existing_order_id,
-		// 		$response->getTid(),
-		// 		$this->l('Please update manually order status to payment accepted'),
-		// 	);
-		// }
 
 		if ($is_payment_in_instalment) {
 			/**
@@ -228,7 +217,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 					$existing_order_id,
 					$response->getTid(),
 					$payment_message,
-					$response->getAmount() *100);
+					$response->getAmount() *100,
+					$response->getStatus());
 
 				$completed_notice = $this->l('Payment in instalments completed');
 				
@@ -246,7 +236,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 					$existing_order_id,
 					$response->getTid(), 
 					$payment_message,
-					$response->getAmount() *100);
+					$response->getAmount() *100,
+					$response->getStatus());
 			}
 		}
 		elseif (((int) $existing_order->current_state != 2 
@@ -264,7 +255,8 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 				$existing_order_id,
 				$response->getTid(), 
 				$payment_message,
-				$response->getAmount() *100);
+				$response->getAmount() *100,
+				$response->getStatus());
 
 			$this->module->debugLog('Notification : order state changed to', $payment_status);
 		}
