@@ -67,8 +67,7 @@ class EasyTransacMultipayModuleFrontController extends ModuleFrontController
 				->setCancelUrl(Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'index.php?controller=order&step=3')
 				->setSecure('yes')
 				->setVersion($this->module->get_server_info_string())
-				->setLanguage($langcode)
-				->setRecurrence('daily');
+				->setLanguage($langcode);
 
 		// Cart description.
 		if ($cart && ($products = $cart->getProducts()) && is_array($products))

@@ -195,6 +195,18 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			exit;
 		}
 
+		// # Success with retry after error.
+		// if ((int) $existing_order->current_state == 8
+		// 			  && $response->getStatus() == 'captured'
+		// )
+		// {
+		// 	$this->module->addTransactionMessage(
+		// 		$existing_order_id,
+		// 		$response->getTid(),
+		// 		$this->l('Please update manually order status to payment accepted'),
+		// 	);
+		// }
+
 		if ($is_payment_in_instalment) {
 			/**
 			 * Payment in instalments process.
@@ -246,6 +258,13 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 			$existing_order->setCurrentState($payment_status);
 
 			$this->module->addOrderMessage($existing_order->id, $payment_message);
+
+			# for Prestashop >= 1.7.7
+			$this->module->addTransactionMessage(
+				$existing_order_id,
+				$response->getTid(), 
+				$payment_message,
+				$response->getAmount() *100);
 
 			$this->module->debugLog('Notification : order state changed to', $payment_status);
 		}

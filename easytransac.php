@@ -489,7 +489,7 @@ class EasyTransac extends PaymentModule
 		$total = 100 * $cart->getOrderTotal(true, Cart::BOTH);
 
         if (Configuration::get('EASYTRANSAC_MULTIPAY')
-            && $total >= 5000)
+        && $total >= 5000)
         {
             if($buffer){
                 $buffer[] = '<br/>';
@@ -508,9 +508,6 @@ class EasyTransac extends PaymentModule
             $buffer[] = $multi;
         }
 
-        // $this->debugLog('customer id', $this->context->customer->id);
-        // $this->debugLog('oneClick', Configuration::get('EASYTRANSAC_ONECLICK'));
-        // $this->debugLog('tpl', $buffer);
         if($buffer){
             $newOption->setAdditionalInformation(implode('', $buffer));
         }
@@ -639,30 +636,11 @@ class EasyTransac extends PaymentModule
     public function hookDisplayAdminOrderTabContent($params){
         $this->loginit();
 
-//                 /** @var array $result */
-        // $result = Db::getInstance()->ExecuteS('SHOW CREATE TABLE '. _DB_PREFIX_.'easytransac_message;');
-// var_dump($result);
-        // $notice = json_encode($result);
-//         $this->debugLog('create table', json_decode($result));
-
-        // $existing_order_id = OrderCore::getOrderByCartId($params['id_order']);
-		// $existing_order = new Order($params['id_order']);
-
-        // $existing_order->setCurrentState(2);
-
-        // $this->addTransactionMessage(
-        //     $params['id_order'],
-        //     'TESTMSG', 
-        //     'TESTMSG'
-        // );
-
         // # Display transaction's saved messages.
         $items = $this->getTransactionMessages($params['id_order']);
 
         $notice = $this->l('No transactions yet.');
         $show_history = false;
-
-        // $notice = $this->fetchStatus($params['id_order']);
 
         $history = [];
         if(!empty($params)){
