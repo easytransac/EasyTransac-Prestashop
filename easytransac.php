@@ -26,7 +26,7 @@ class EasyTransac extends PaymentModule
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.0';
+        $this->version = '3.3.1';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
@@ -259,7 +259,8 @@ class EasyTransac extends PaymentModule
                 array(
                     'type' => 'text',
                     'label' => $this->l('Api Key'),
-                    'desc' => $this->l('Your Easytransac application API Key is available in your back office in E-commerce > Applications.'),
+                    'desc' => $this->l('Your Easytransac application API Key is available in your back office, by editing ')
+                        .'<a target="_blank" href="https://www.easytransac.com/'.$this->l('en').'/login/application/all">'.$this->l('your application').'</a>.',
                     'name' => 'EASYTRANSAC_API_KEY',
                     'size' => 20,
                     'required' => true
@@ -267,7 +268,8 @@ class EasyTransac extends PaymentModule
                 array(
                     'type' => 'free',
                     'label' => $this->l('Notification URL'),
-                    'desc' => $this->l('Notification URL to copy paste in your EasyTransac appplication settings'),
+                    'desc' => $this->l('Enter this notification URL when editing ')
+                        .'<a target="_blank" href="https://www.easytransac.com/'.$this->l('en').'/login/application/all">'.$this->l('your application').'</a>.',
                     'name' => 'EASYTRANSAC_NOTIFICATION_URL',
                     'size' => 20,
                 ),
@@ -695,15 +697,26 @@ class EasyTransac extends PaymentModule
                 ->write('product map '.  json_encode($item));
         }
 
-        $items = $params['order']->getOrderSlipsCollection()->getResults();
-        $total_refund_amount = 0;
+        // $items = $params['order']->getOrderSlipsCollection()->getResults();
+        // $total_refund_amount = 0;
 
-        foreach ($items as $key => $item) {
-            EasyTransac\Core\Logger::getInstance()
-                ->write('refund amount for item '.  $item->amount);
+        // foreach ($items as $key => $item) {
+        //     EasyTransac\Core\Logger::getInstance()
+        //         ->write('refund amount for item '.  $item->amount);
 
-            $total_refund_amount += $item->amount;
-        }
+        //     $total_refund_amount += $item->amount;
+        // }
+
+        $orderSlip = $params['order']->getOrderSlipsCollection()
+                                    ->orderBy('date_upd', 'desc')
+                                    ->getFirst();
+
+        $total_refund_amount = $orderSlip->amount + $orderSlip->shipping_cost_amount;
+
+        EasyTransac\Core\Logger::getInstance()
+            ->write('refund amount for order slip: '. $orderSlip->amount
+                .' - shipping cost amount: '.$orderSlip->shipping_cost_amount
+                .' - total: '.$total_refund_amount);
 
         if($total_refund_amount > 0){
             $logMsg = json_encode(print_r($params['order'], true));

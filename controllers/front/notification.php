@@ -250,12 +250,18 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 
 			$this->module->addOrderMessage($existing_order->id, $payment_message);
 
+			$amount = $response->getContent()->getAmount() * 100;
+
+			if($payment_status == 7){
+				$amount = $response->getContent()->AmountRefund() * 100;
+			}
+
 			# for Prestashop >= 1.7.7
 			$this->module->addTransactionMessage(
 				$existing_order_id,
 				$response->getTid(), 
 				$payment_message,
-				$response->getAmount() *100,
+				$amount,
 				$response->getStatus());
 
 			$this->module->debugLog('Notification : order state changed to', $payment_status);

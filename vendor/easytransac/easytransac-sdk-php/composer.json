@@ -1,6 +1,6 @@
 {
     "name": "easytransac/easytransac-sdk-php",
-    "description": "A SDK to make payment with the EasyTransac API",
+    "description": "Easytransac payment gateway PHP SDK",
     "keywords": [
         "easytransac",
         "php",
@@ -17,9 +17,9 @@
         }
     ],
     "autoload": {
-        "psr-4": { 
-        	"EasyTransac\\": "sdk/EasyTransac/" 
-    	}
+        "psr-4": {
+            "EasyTransac\\": "sdk/EasyTransac/"
+        }
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6",
