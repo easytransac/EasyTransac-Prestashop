@@ -45,6 +45,8 @@ class EasyTransac extends PaymentModule
 
         if (!Configuration::get('EASYTRANSAC_API_KEY'))
             $this->warning = $this->l('No API key provided');
+        
+        $this->module_key = '3b00196a26285f2cf9414263b7f70b50';
     }
 
     /**
