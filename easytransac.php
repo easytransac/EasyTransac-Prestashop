@@ -213,21 +213,33 @@ class EasyTransac extends PaymentModule
             $info =  sprintf('%s "%s" >= 1.0.1', 
                              $this->l('[OK] OpenSSL version'), OPENSSL_VERSION_TEXT);
 
-            $requirements_message = sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
-            $info);
+            $this->context->smarty->assign(['message' => $info]);
+
+            $requirements_message = $this->context->smarty->fetch(
+                'module:easytransac/views/templates/bo/success.tpl');
+
         } else {
             $info =  sprintf('%s "%s" < 1.0.1', 
                              $this->l('[ERROR] OpenSSL version not supported'), OPENSSL_VERSION_TEXT);
 
-            $requirements_message = '<div class="alert-danger" style="padding:5px;">' . $info . '" < 1.0.1</div>';
+            $this->context->smarty->assign(['message' => $info.' < 1.0.1']);
+
+            $requirements_message = $this->context->smarty->fetch(
+                'module:easytransac/views/templates/bo/alert.tpl');
         }
 
         if ($curl_activated) {
-            $requirements_message .= sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
-                                             $this->l('[OK] cURL is installed'));
+
+            $this->context->smarty->assign(['message' => $this->l('[OK] cURL is installed')]);
+
+            $requirements_message .= $this->context->smarty->fetch(
+                'module:easytransac/views/templates/bo/success.tpl');
         } else {
-            $requirements_message .= sprintf('<div class="alert-danger" style="padding:5px;">%s</div>',
-                                             $this->l('[ERROR] PHP cURL extension missing'));
+
+            $this->context->smarty->assign(['message' => $this->l('[ERROR] PHP cURL extension missing')]);
+
+            $requirements_message .= $this->context->smarty->fetch(
+                'module:easytransac/views/templates/bo/alert.tpl');
         }
 
         # Message about a newer version of this module.
@@ -235,15 +247,28 @@ class EasyTransac extends PaymentModule
         if (!empty($latestVersion)) {
             $isActualVersion = $latestVersion === $this->version;
             if($isActualVersion){
-                $requirements_message .= 
-                    sprintf('<div class="alert-success" style="padding:5px;">%s</div>',
-                            $this->l('[OK] Latest module version installed'));
+                $this->context->smarty->assign([
+                    'message' => $this->l('[OK] Latest module version installed')]);
+
+                $requirements_message .= $this->context->smarty->fetch(
+                    'module:easytransac/views/templates/bo/success.tpl');
             } else {
-                $requirements_message .=
-                    sprintf('<div class="alert-danger" style="padding:5px;">%s : %s</div>',
-                            $this->l('[ERROR] New module is available on www.easytransac.com'), $latestVersion);
+                
+                $this->context->smarty->assign([
+                    'message' => $this->l('[ERROR] New module is available on www.easytransac.com')]);
+
+                $requirements_message .= $this->context->smarty->fetch(
+                    'module:easytransac/views/templates/bo/success.tpl'); 
             }
         }
+
+        $this->context->smarty->assign([
+            'title' => ' '.$this->l('your application'),
+            'link' => 'https://www.easytransac.com/'.$this->l('en').'/login/application/all'
+        ]);
+
+        $et_link = $this->context->smarty->fetch(
+            'module:easytransac/views/templates/bo/link.tpl');
 
         // Init Fields form array
         $fields_form[0]['form'] = array(
@@ -262,7 +287,7 @@ class EasyTransac extends PaymentModule
                     'type' => 'text',
                     'label' => $this->l('Api Key'),
                     'desc' => $this->l('Your Easytransac application API Key is available in your back office, by editing ')
-                        .'<a target="_blank" href="https://www.easytransac.com/'.$this->l('en').'/login/application/all">'.$this->l('your application').'</a>.',
+                        .$et_link.'.',
                     'name' => 'EASYTRANSAC_API_KEY',
                     'size' => 20,
                     'required' => true
@@ -271,7 +296,7 @@ class EasyTransac extends PaymentModule
                     'type' => 'free',
                     'label' => $this->l('Notification URL'),
                     'desc' => $this->l('Enter this notification URL when editing ')
-                        .'<a target="_blank" href="https://www.easytransac.com/'.$this->l('en').'/login/application/all">'.$this->l('your application').'</a>.',
+                        .$et_link.'.',
                     'name' => 'EASYTRANSAC_NOTIFICATION_URL',
                     'size' => 20,
                 ),
@@ -448,9 +473,19 @@ class EasyTransac extends PaymentModule
         $helper->fields_value['EASYTRANSAC_NOTIFICATION_URL'] = 
                 Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/notification';
 
-        $helper->fields_value['EASYTRANSAC_HELP'] = $this->l('Visit') . 
-            ' <a target="_blank" href="https://www.easytransac.com">www.easytransac.com</a> ' . 
-            $this->l('in order to create an account and configure your application.');
+        
+        $this->context->smarty->assign([
+            'title' => 'www.easytransac.com',
+            'link' => 'https://www.easytransac.com/'
+        ]);
+
+        $et_link = $this->context->smarty->fetch(
+            'module:easytransac/views/templates/bo/link.tpl');
+
+        $helper->fields_value['EASYTRANSAC_HELP'] = sprintf('%s %s %s',
+            $this->l('Visit'),
+            $et_link,
+            $this->l('in order to create an account and configure your application.'));
 
         $helper->fields_value['EASYTRANSAC_REQUIREMENTS_HELP'] = 
             Configuration::get('EASYTRANSAC_REQUIREMENTS_HELP');
