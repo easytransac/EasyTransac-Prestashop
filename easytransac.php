@@ -1,10 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2022 Easytransac
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-/*
- * EasyTransac's official Prestashop payment gateway.
- */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
@@ -196,6 +209,42 @@ class EasyTransac extends PaymentModule
     }
 
     /**
+     * Helper function for admin success message.
+     * For prestashop validator.
+     */
+    private function successMessage($value){
+        $this->context->smarty->assign(['message' => $value]);
+
+        return $this->context->smarty->fetch(
+            'module:easytransac/views/templates/admin/success.tpl');
+    }
+
+    /**
+     * Helper function for admin alert message.
+     * For prestashop validator.
+     */
+    private function alertMessage($value){
+        $this->context->smarty->assign(['message' => $value]);
+
+        return $this->context->smarty->fetch(
+            'module:easytransac/views/templates/admin/alert.tpl');
+    }
+
+    /**
+     * Helper function for admin alert message.
+     * For prestashop validator.
+     */
+    private function htmlLink($title, $link){
+        $this->context->smarty->assign([
+            'title' => $title,
+            'link' => $link
+        ]);
+
+        return $this->context->smarty->fetch(
+            'module:easytransac/views/templates/admin/link.tpl');
+    }
+
+    /**
      * Settings form.
      * @return string
      */
@@ -203,7 +252,9 @@ class EasyTransac extends PaymentModule
     {
         // Get default language
         $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-        $requirements_message = '';
+
+        // Requirement messages to display.
+        $require_buffer = [];
 
         // Requirements message;
         $openssl_version_supported = OPENSSL_VERSION_NUMBER >= 0x10001000;
@@ -213,33 +264,26 @@ class EasyTransac extends PaymentModule
             $info =  sprintf('%s "%s" >= 1.0.1', 
                              $this->l('[OK] OpenSSL version'), OPENSSL_VERSION_TEXT);
 
-            $this->context->smarty->assign(['message' => $info]);
-
-            $requirements_message = $this->context->smarty->fetch(
-                'module:easytransac/views/templates/bo/success.tpl');
+            $require_buffer[] = $this->successMessage($info);
 
         } else {
             $info =  sprintf('%s "%s" < 1.0.1', 
-                             $this->l('[ERROR] OpenSSL version not supported'), OPENSSL_VERSION_TEXT);
+                             $this->l('[ERROR] OpenSSL version not supported'), 
+                             OPENSSL_VERSION_TEXT);
 
-            $this->context->smarty->assign(['message' => $info.' < 1.0.1']);
-
-            $requirements_message = $this->context->smarty->fetch(
-                'module:easytransac/views/templates/bo/alert.tpl');
+            $require_buffer[] = $this->alertMessage($info);
         }
 
         if ($curl_activated) {
 
-            $this->context->smarty->assign(['message' => $this->l('[OK] cURL is installed')]);
+            $info = $this->l('[OK] cURL is installed');
 
-            $requirements_message .= $this->context->smarty->fetch(
-                'module:easytransac/views/templates/bo/success.tpl');
+            $require_buffer[] = $this->successMessage($info);
         } else {
 
-            $this->context->smarty->assign(['message' => $this->l('[ERROR] PHP cURL extension missing')]);
+            $info = $this->l('[ERROR] PHP cURL extension missing');
 
-            $requirements_message .= $this->context->smarty->fetch(
-                'module:easytransac/views/templates/bo/alert.tpl');
+            $require_buffer[] = $this->alertMessage($info);
         }
 
         # Message about a newer version of this module.
@@ -247,28 +291,22 @@ class EasyTransac extends PaymentModule
         if (!empty($latestVersion)) {
             $isActualVersion = $latestVersion === $this->version;
             if($isActualVersion){
-                $this->context->smarty->assign([
-                    'message' => $this->l('[OK] Latest module version installed')]);
+                $info = $this->l('[OK] Latest module version installed');
 
-                $requirements_message .= $this->context->smarty->fetch(
-                    'module:easytransac/views/templates/bo/success.tpl');
+                $require_buffer[] = $this->successMessage($info);
             } else {
                 
-                $this->context->smarty->assign([
-                    'message' => $this->l('[ERROR] New module is available on www.easytransac.com')]);
+                $info = $this->l('[ERROR] New module is available on www.easytransac.com');
 
-                $requirements_message .= $this->context->smarty->fetch(
-                    'module:easytransac/views/templates/bo/success.tpl'); 
+                $require_buffer[] = $this->alertMessage($info);
             }
         }
 
-        $this->context->smarty->assign([
-            'title' => ' '.$this->l('your application'),
-            'link' => 'https://www.easytransac.com/'.$this->l('en').'/login/application/all'
-        ]);
+        $requirements_message = implode('', $require_buffer);
 
-        $et_link = $this->context->smarty->fetch(
-            'module:easytransac/views/templates/bo/link.tpl');
+
+        $et_link = $this->htmlLink(' '.$this->l('your application'),
+                    'https://www.easytransac.com/'.$this->l('en').'/login/application/all');
 
         // Init Fields form array
         $fields_form[0]['form'] = array(
@@ -473,14 +511,8 @@ class EasyTransac extends PaymentModule
         $helper->fields_value['EASYTRANSAC_NOTIFICATION_URL'] = 
                 Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/notification';
 
-        
-        $this->context->smarty->assign([
-            'title' => 'www.easytransac.com',
-            'link' => 'https://www.easytransac.com/'
-        ]);
-
-        $et_link = $this->context->smarty->fetch(
-            'module:easytransac/views/templates/bo/link.tpl');
+        $et_link = $this->htmlLink('www.easytransac.com',
+                                   'https://www.easytransac.com/');
 
         $helper->fields_value['EASYTRANSAC_HELP'] = sprintf('%s %s %s',
             $this->l('Visit'),
