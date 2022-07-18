@@ -12,8 +12,10 @@ class Customer extends CustomerCore
 
 	function setClient_id($client_id)
 	{
-		Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_customer` '
-				. ' VALUES(' . (int)$this->id . ',\'' . $client_id . '\')');
+		Db::getInstance()->insert('easytransac_customer', [
+					'id_customer' => (int)$this->id,
+					'client_id' => pSQL($client_id),
+		]);
 	}
 
 	/**

@@ -855,8 +855,10 @@ class EasyTransac extends PaymentModule
      */
 	function setTransactionId($order_id, $transaction_id)
 	{
-		Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_transaction` '
-				. ' VALUES(' . intval($order_id) . ',\'' . $transaction_id . '\')');
+        Db::getInstance()->insert('easytransac_transaction', [
+            'id_order' => (int) $order_id,
+            'external_id' => pSQL($transaction_id),
+        ]);
 	}
 
     /**
@@ -883,11 +885,16 @@ class EasyTransac extends PaymentModule
             $status = substr($status, 0, 19);
         }
 
-        /** @var \Db $db */
-        $db = \Db::getInstance();
+        $now = date('Y-m-d H:i:s');
 
-		$db->execute('INSERT INTO `'._DB_PREFIX_.'easytransac_message` '
-				. ' VALUES(' . intval($order_id) . ', NOW(), \'' . $message . '\', \'' . $status . '\', \'' . $transaction_id . '\', ' . $save_amount . ')');
+        Db::getInstance()->insert('easytransac_message', [
+            'id_order' => (int) $order_id,
+            'date' => $now,
+            'message' => pSQL($message),
+            'status' => pSQL($status),
+            'external_id' => pSQL($transaction_id),
+            'amount' => (int)$save_amount,
+        ]);
 	}
 
     /**
