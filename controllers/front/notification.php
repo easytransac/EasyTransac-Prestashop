@@ -51,14 +51,13 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		}
 		$customer = new Customer($cart->id_customer);
 
-		$existing_order_id = OrderCore::getOrderByCartId($response->getOrderId());
+		$existing_order_id = Order::getIdByCartId($response->getOrderId());
 		$existing_order = new Order($existing_order_id);
 
 		$this->module->debugLog('Notification cart id', $response->getOrderId());
 		$this->module->debugLog('Notification order id from cart', $existing_order_id);
 		$this->module->debugLog('Notification customer', $existing_order->id_customer);
 
-		$this->module->debugLog('Notification customer secure_key', '');
 		$this->module->debugLog('Notification customer secure_key', $customer->secure_key);
 
 		$this->module->debugLog('Notification client ID', $response->getClient()->getId());
@@ -76,7 +75,9 @@ class EasyTransacNotificationModuleFrontController extends ModuleFrontController
 		{
 			case 'captured':
 				$payment_status = 2;
-				$customer->setClient_id($response->getClient()->getId());
+                if (empty($customer->getClient_id())) {
+                    $customer->setClient_id($response->getClient()->getId());
+                }
 				break;
 
 			case 'pending':
