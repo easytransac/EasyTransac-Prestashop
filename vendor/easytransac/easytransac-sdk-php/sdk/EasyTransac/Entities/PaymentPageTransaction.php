@@ -65,6 +65,9 @@ class PaymentPageTransaction extends Entity
     /** @map:PayToEmail **/
     protected $payToEmail = null;
 
+    /** @map:PayToId **/
+    protected $payToId = null;
+
     /** @map:UserAgent **/
     protected $userAgent = null;
 
@@ -88,6 +91,18 @@ class PaymentPageTransaction extends Entity
 
     /** @map:SddPhone **/
     protected $sddPhone = null;
+
+    /** @map:SaveCard **/
+    protected $saveCard = null;
+
+    /** @map:ReturnMethod **/
+    protected $returnMethod = null;
+
+    /** @map:InvoiceExtension **/
+    protected $invoiceExtension = null;
+
+    /** @map:InvoiceName **/
+    protected $invoiceName = null;
 
     public function __construct()
     {
@@ -216,6 +231,12 @@ class PaymentPageTransaction extends Entity
         return $this;
     }
 
+    public function setPayToId($payToId)
+    {
+        $this->payToId = $payToId;
+        return $this;
+    }
+
     public function setUserAgent($userAgent)
     {
         $this->userAgent = $userAgent;
@@ -261,6 +282,30 @@ class PaymentPageTransaction extends Entity
     public function setSddPhone($sddPhone)
     {
         $this->sddPhone = $sddPhone;
+        return $this;
+    }
+
+    public function setSaveCard($saveCard)
+    {
+        $this->saveCard = $saveCard;
+        return $this;
+    }
+
+    public function setReturnMethod($returnMethod)
+    {
+        $this->returnMethod = $returnMethod;
+        return $this;
+    }
+
+    public function setInvoiceExtension($extension)
+    {
+        $this->invoiceExtension = $extension;
+        return $this;
+    }
+
+    public function setInvoiceName($invoiceName)
+    {
+        $this->invoiceName = $invoiceName;
         return $this;
     }
 }

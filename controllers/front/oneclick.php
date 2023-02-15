@@ -31,7 +31,9 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				->setOrderId($this->context->cart->id)
 				->setClientId($this->context->customer->getClient_id())
 				->setSecure('yes')
-				->setReturnUrl(Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/validation');
+				->setReturnUrl(
+                    Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/validation'
+                );
 
 		$dp = new EasyTransac\Requests\OneClickPayment();
 		$response = $dp->execute($transaction);
@@ -94,7 +96,7 @@ class EasyTransacOneClickModuleFrontController extends ModuleFrontController
 				break;
 
 			case 'pending':
-				$payment_status = $this->get_pending_payment_state();
+				$payment_status = $this->module->get_pending_payment_state();
 				break;
 
 			case 'refunded':

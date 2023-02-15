@@ -33,9 +33,11 @@ class EasyTransacMultipayModuleFrontController extends ModuleFrontController
 		$cart = $this->context->cart;
 		$customer = $this->context->customer;
 		$user_address = new Address(intval($cart->id_address_invoice));
+        $user_country = new Country(intval($user_address->id_country));
 		$api_key = Configuration::get('EASYTRANSAC_API_KEY');
 		$total = 100 * $cart->getOrderTotal(true, Cart::BOTH);
 		$langcode = $this->context->language->iso_code == 'fr' ? 'FRE' : 'ENG';
+        $iso3_user_country = EasyTransac::convertCountryToISO3($user_country->iso_code);
 		$this->module->loginit();
 		$this->module->debugLog('Start Multiple Payment Page Request');
 		EasyTransac\Core\Services::getInstance()->provideAPIKey($api_key);
@@ -57,14 +59,19 @@ class EasyTransacMultipayModuleFrontController extends ModuleFrontController
 				->setBirthDate($customer->birthday == '0000-00-00' ? '' : $customer->birthday)
 				->setNationality('')
 				->setCallingCode('')
+                ->setCountry($iso3_user_country === null ? '' : $iso3_user_country)
 				->setPhone($user_address->phone);
 
 		$transaction = (new EasyTransac\Entities\PaymentPageTransaction())
 				->setAmount($total)
 				->setCustomer($customer_ET)
 				->setOrderId($this->context->cart->id)
-				->setReturnUrl(Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/validation')
-				->setCancelUrl(Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'index.php?controller=order&step=3')
+				->setReturnUrl(
+                    Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'module/easytransac/validation'
+                )
+				->setCancelUrl(
+                    Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'index.php?controller=order&step=3'
+                )
 				->setSecure('yes')
 				->setVersion($this->module->get_server_info_string())
 				->setLanguage($langcode);

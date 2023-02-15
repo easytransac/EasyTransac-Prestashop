@@ -31,6 +31,8 @@ class EasyTransac extends PaymentModule
      */
     private $debugLogEnabled = false;
 
+    public int $is_eu_compatible;
+
     /**
      * Module init.
      * @return void
@@ -39,7 +41,7 @@ class EasyTransac extends PaymentModule
     {
         $this->name = 'easytransac';
         $this->tab = 'payments_gateways';
-        $this->version = '3.3.1';
+        $this->version = '3.3.2';
         $this->author = 'EasyTransac';
         $this->is_eu_compatible = 1;
         $this->need_instance = 0;
@@ -60,6 +62,10 @@ class EasyTransac extends PaymentModule
             $this->warning = $this->l('No API key provided');
         
         $this->module_key = '3b00196a26285f2cf9414263b7f70b50';
+
+        // Disable onclick payment
+        // WIP : feature will come back soon
+        Configuration::updateValue('EASYTRANSAC_ONECLICK', 0);
     }
 
     /**
@@ -81,9 +87,8 @@ class EasyTransac extends PaymentModule
      */
     public function install()
     {
-        if (!parent::install() || 
-            !$this->registerHook('paymentOptions') || 
-            !$this->registerHook('actionFrontControllerSetMedia') ||
+        if (!parent::install() ||
+            !$this->registerHook('paymentOptions') ||
             !$this->registerHook('actionOrderSlipAdd') ||
             !$this->registerHook('displayAdminOrderTabContent')
         ){
@@ -104,8 +109,9 @@ class EasyTransac extends PaymentModule
      */
     public function uninstall()
     {
-        if (!parent::uninstall())
+        if (!parent::uninstall()) {
             return false;
+        }
         include_once(_PS_MODULE_DIR_ . $this->name . '/easytransac_install.php');
         $easytransac_install = new EasyTransacInstall();
         $easytransac_install->deleteConfiguration();
@@ -136,12 +142,14 @@ class EasyTransac extends PaymentModule
                 Configuration::updateValue('EASYTRANSAC_DEBUG', 1);
             }
 
-            $enable_oneclick = strval(Tools::getValue('EASYTRANSAC_ONECLICK'));
-            if (empty($enable_oneclick)) {
-                Configuration::updateValue('EASYTRANSAC_ONECLICK', 0);
-            } else {
-                Configuration::updateValue('EASYTRANSAC_ONECLICK', 1);
-            }
+            // Disable onclick payment
+            // WIP : feature will come back soon
+            //            $enable_oneclick = strval(Tools::getValue('EASYTRANSAC_ONECLICK'));
+            //            if (empty($enable_oneclick)) {
+            //                Configuration::updateValue('EASYTRANSAC_ONECLICK', 0);
+            //            } else {
+            //                Configuration::updateValue('EASYTRANSAC_ONECLICK', 1);
+            //            }
 
             # Payments in instalments
             Configuration::updateValue('EASYTRANSAC_MULTIPAY', 0);
@@ -338,26 +346,28 @@ class EasyTransac extends PaymentModule
                     'name' => 'EASYTRANSAC_NOTIFICATION_URL',
                     'size' => 20,
                 ),
-                array(
-                    'type' => 'radio',
-                    'label' => $this->l('One Click Payment'),
-                    'desc' => $this->l('The credit card is stored for future payments.'),
-                    'name' => 'EASYTRANSAC_ONECLICK',
-                    'size' => 20,
-                    'is_bool' => true,
-                    'values' => array(
-                        array(
-                            'id' => 'active2_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled')
-                        ),
-                        array(
-                            'id' => 'active2_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
+                // Disable onclick payment
+                // WIP : feature will come back soon
+                //                array(
+                //                    'type' => 'radio',
+                //                    'label' => $this->l('One Click Payment'),
+                //                    'desc' => $this->l('The credit card is stored for future payments.'),
+                //                    'name' => 'EASYTRANSAC_ONECLICK',
+                //                    'size' => 20,
+                //                    'is_bool' => true,
+                //                    'values' => array(
+                //                        array(
+                //                            'id' => 'active2_on',
+                //                            'value' => 1,
+                //                            'label' => $this->l('Enabled')
+                //                        ),
+                //                        array(
+                //                            'id' => 'active2_off',
+                //                            'value' => 0,
+                //                            'label' => $this->l('Disabled')
+                //                        )
+                //                    ),
+                //                ),
                 array(
                     'type' => 'radio',
                     'label' => $this->l('Enable payment in 2 instalments'),
@@ -548,13 +558,15 @@ class EasyTransac extends PaymentModule
         // Adding up templates.
         $buffer = [];
 
-        // Customer should have paid at least one time using Easytransac.
-        if (Configuration::get('EASYTRANSAC_ONECLICK') &&
-            $this->isCustomerKnown())
-        {
-            $buffer[] = $this->context->smarty->fetch(
-                                        'module:easytransac/views/templates/hook/oneclick_payment.tpl');
-        }
+// Disable onclick payment
+// WIP : feature will come back soon
+//        // Customer should have paid at least one time using Easytransac.
+//        if (Configuration::get('EASYTRANSAC_ONECLICK') &&
+//            $this->isCustomerKnown())
+//        {
+//            $buffer[] = $this->context->smarty->fetch(
+//                                        'module:easytransac/views/templates/hook/oneclick_payment.tpl');
+//        }
 
         $cart = $this->context->cart;
 		$total = 100 * $cart->getOrderTotal(true, Cart::BOTH);
@@ -620,21 +632,53 @@ class EasyTransac extends PaymentModule
      * Make an order out of a cart.
      * @return void
      */
-    public function validateOrder($id_cart, $id_order_state, $amount_paid,
-                                  $payment_method = 'Unknown', $message = null,
-                                  $transaction = array(), $currency_special = null,
-                                  $dont_touch_amount = false, $secure_key = false,
-                                  Shop $shop = null)
+    public function validateOrder(
+        $id_cart,
+        $id_order_state,
+        $amount_paid,
+        $payment_method = 'Unknown',
+        $message = null,
+        $transaction = array(),
+        $currency_special = null,
+        $dont_touch_amount = false,
+        $secure_key = false,
+        Shop $shop = null,
+        ?string $order_reference = null)
     {
         if (!$this->active)
         {
             return;
         }
 
-        parent::validateOrder((int)$id_cart, (int)$id_order_state,
-                                (float)$amount_paid, $payment_method, 
-                                $message, $transaction, $currency_special,
-                                $dont_touch_amount, $secure_key, $shop);
+        // new argument $order_reference added in parent class since prestashop version 8.0
+        if (isset($order_reference)) {
+            parent::validateOrder(
+                (int)$id_cart,
+                (int)$id_order_state,
+                (float)$amount_paid,
+                $payment_method,
+                $message,
+                $transaction,
+                $currency_special,
+                $dont_touch_amount,
+                $secure_key,
+                $shop,
+                $order_reference
+            );
+        } else {
+            parent::validateOrder(
+                (int)$id_cart,
+                (int)$id_order_state,
+                (float)$amount_paid,
+                $payment_method,
+                $message,
+                $transaction,
+                $currency_special,
+                $dont_touch_amount,
+                $secure_key,
+                $shop
+            );
+        }
     }
 
     /**
@@ -697,7 +741,7 @@ class EasyTransac extends PaymentModule
     }
 
     /**
-     * Helper function to get Order payment paymend pending state.
+     * Helper function to get Order payment payment pending state.
      */
     public function get_pending_payment_state(){
         return (int)Configuration::get('EASYTRANSAC_ID_ORDER_STATE');
@@ -1007,4 +1051,265 @@ class EasyTransac extends PaymentModule
     {
         return false;
     }
+
+    /**
+     * Convert a iso2 country code to iso3
+     * @param string $iso2 prestashop country iso_code
+     * @return ?string iso3 country code
+     */
+    public static function convertCountryToISO3(string $iso2): ?string
+    {
+        $conversions = [
+            'AF' => 'AFG',
+            'AX' => 'ALA',
+            'AL' => 'ALB',
+            'DZ' => 'DZA',
+            'AS' => 'ASM',
+            'AD' => 'AND',
+            'AO' => 'AGO',
+            'AI' => 'AIA',
+            'AQ' => 'ATA',
+            'AG' => 'ATG',
+            'AR' => 'ARG',
+            'AM' => 'ARM',
+            'AW' => 'ABW',
+            'AU' => 'AUS',
+            'AT' => 'AUT',
+            'AZ' => 'AZE',
+            'BS' => 'BHS',
+            'BH' => 'BHR',
+            'BD' => 'BGD',
+            'BB' => 'BRB',
+            'BY' => 'BLR',
+            'BE' => 'BEL',
+            'BZ' => 'BLZ',
+            'BJ' => 'BEN',
+            'BM' => 'BMU',
+            'BT' => 'BTN',
+            'BO' => 'BOL',
+            'BA' => 'BIH',
+            'BW' => 'BWA',
+            'BV' => 'BVT',
+            'BR' => 'BRA',
+            'VG' => 'VGB',
+            'IO' => 'IOT',
+            'BN' => 'BRN',
+            'BG' => 'BGR',
+            'BF' => 'BFA',
+            'BI' => 'BDI',
+            'KH' => 'KHM',
+            'CM' => 'CMR',
+            'CA' => 'CAN',
+            'CV' => 'CPV',
+            'KY' => 'CYM',
+            'CF' => 'CAF',
+            'TD' => 'TCD',
+            'CL' => 'CHL',
+            'CN' => 'CHN',
+            'HK' => 'HKG',
+            'MO' => 'MAC',
+            'CX' => 'CXR',
+            'CC' => 'CCK',
+            'CO' => 'COL',
+            'KM' => 'COM',
+            'CG' => 'COG',
+            'CD' => 'COD',
+            'CK' => 'COK',
+            'CR' => 'CRI',
+            'CI' => 'CIV',
+            'HR' => 'HRV',
+            'CU' => 'CUB',
+            'CY' => 'CYP',
+            'CZ' => 'CZE',
+            'DK' => 'DNK',
+            'DJ' => 'DJI',
+            'DM' => 'DMA',
+            'DO' => 'DOM',
+            'EC' => 'ECU',
+            'EG' => 'EGY',
+            'SV' => 'SLV',
+            'GQ' => 'GNQ',
+            'ER' => 'ERI',
+            'EE' => 'EST',
+            'ET' => 'ETH',
+            'FK' => 'FLK',
+            'FO' => 'FRO',
+            'FJ' => 'FJI',
+            'FI' => 'FIN',
+            'FR' => 'FRA',
+            'GF' => 'GUF',
+            'PF' => 'PYF',
+            'TF' => 'ATF',
+            'GA' => 'GAB',
+            'GM' => 'GMB',
+            'GE' => 'GEO',
+            'DE' => 'DEU',
+            'GH' => 'GHA',
+            'GI' => 'GIB',
+            'GR' => 'GRC',
+            'GL' => 'GRL',
+            'GD' => 'GRD',
+            'GP' => 'GLP',
+            'GU' => 'GUM',
+            'GT' => 'GTM',
+            'GG' => 'GGY',
+            'GN' => 'GIN',
+            'GW' => 'GNB',
+            'GY' => 'GUY',
+            'HT' => 'HTI',
+            'HM' => 'HMD',
+            'VA' => 'VAT',
+            'HN' => 'HND',
+            'HU' => 'HUN',
+            'IS' => 'ISL',
+            'IN' => 'IND',
+            'ID' => 'IDN',
+            'IR' => 'IRN',
+            'IQ' => 'IRQ',
+            'IE' => 'IRL',
+            'IM' => 'IMN',
+            'IL' => 'ISR',
+            'IT' => 'ITA',
+            'JM' => 'JAM',
+            'JP' => 'JPN',
+            'JE' => 'JEY',
+            'JO' => 'JOR',
+            'KZ' => 'KAZ',
+            'KE' => 'KEN',
+            'KI' => 'KIR',
+            'KP' => 'PRK',
+            'KR' => 'KOR',
+            'KW' => 'KWT',
+            'KG' => 'KGZ',
+            'LA' => 'LAO',
+            'LV' => 'LVA',
+            'LB' => 'LBN',
+            'LS' => 'LSO',
+            'LR' => 'LBR',
+            'LY' => 'LBY',
+            'LI' => 'LIE',
+            'LT' => 'LTU',
+            'LU' => 'LUX',
+            'MK' => 'MKD',
+            'MG' => 'MDG',
+            'MW' => 'MWI',
+            'MY' => 'MYS',
+            'MV' => 'MDV',
+            'ML' => 'MLI',
+            'MT' => 'MLT',
+            'MH' => 'MHL',
+            'MQ' => 'MTQ',
+            'MR' => 'MRT',
+            'MU' => 'MUS',
+            'YT' => 'MYT',
+            'MX' => 'MEX',
+            'FM' => 'FSM',
+            'MD' => 'MDA',
+            'MC' => 'MCO',
+            'MN' => 'MNG',
+            'ME' => 'MNE',
+            'MS' => 'MSR',
+            'MA' => 'MAR',
+            'MZ' => 'MOZ',
+            'MM' => 'MMR',
+            'NA' => 'NAM',
+            'NR' => 'NRU',
+            'NP' => 'NPL',
+            'NL' => 'NLD',
+            'NC' => 'NCL',
+            'NZ' => 'NZL',
+            'NI' => 'NIC',
+            'NE' => 'NER',
+            'NG' => 'NGA',
+            'NU' => 'NIU',
+            'NF' => 'NFK',
+            'MP' => 'MNP',
+            'NO' => 'NOR',
+            'OM' => 'OMN',
+            'PK' => 'PAK',
+            'PW' => 'PLW',
+            'PS' => 'PSE',
+            'PA' => 'PAN',
+            'PG' => 'PNG',
+            'PY' => 'PRY',
+            'PE' => 'PER',
+            'PH' => 'PHL',
+            'PN' => 'PCN',
+            'PL' => 'POL',
+            'PT' => 'PRT',
+            'PR' => 'PRI',
+            'QA' => 'QAT',
+            'RE' => 'REU',
+            'RO' => 'ROU',
+            'RU' => 'RUS',
+            'RW' => 'RWA',
+            'BL' => 'BLM',
+            'SH' => 'SHN',
+            'KN' => 'KNA',
+            'LC' => 'LCA',
+            'MF' => 'MAF',
+            'SX' => 'SXM',
+            'PM' => 'SPM',
+            'VC' => 'VCT',
+            'WS' => 'WSM',
+            'SM' => 'SMR',
+            'ST' => 'STP',
+            'SA' => 'SAU',
+            'SN' => 'SEN',
+            'RS' => 'SRB',
+            'SC' => 'SYC',
+            'SL' => 'SLE',
+            'SG' => 'SGP',
+            'SK' => 'SVK',
+            'SI' => 'SVN',
+            'SB' => 'SLB',
+            'SO' => 'SOM',
+            'ZA' => 'ZAF',
+            'GS' => 'SGS',
+            'SS' => 'SSD',
+            'ES' => 'ESP',
+            'LK' => 'LKA',
+            'SD' => 'SDN',
+            'SR' => 'SUR',
+            'SJ' => 'SJM',
+            'SZ' => 'SWZ',
+            'SE' => 'SWE',
+            'CH' => 'CHE',
+            'SY' => 'SYR',
+            'TW' => 'TWN',
+            'TJ' => 'TJK',
+            'TZ' => 'TZA',
+            'TH' => 'THA',
+            'TL' => 'TLS',
+            'TG' => 'TGO',
+            'TK' => 'TKL',
+            'TO' => 'TON',
+            'TT' => 'TTO',
+            'TN' => 'TUN',
+            'TR' => 'TUR',
+            'TM' => 'TKM',
+            'TC' => 'TCA',
+            'TV' => 'TUV',
+            'UG' => 'UGA',
+            'UA' => 'UKR',
+            'AE' => 'ARE',
+            'GB' => 'GBR',
+            'US' => 'USA',
+            'UM' => 'UMI',
+            'UY' => 'URY',
+            'UZ' => 'UZB',
+            'VU' => 'VUT',
+            'VE' => 'VEN',
+            'VN' => 'VNM',
+            'VI' => 'VIR',
+            'WF' => 'WLF',
+            'EH' => 'ESH',
+            'YE' => 'YEM',
+            'ZM' => 'ZMB',
+            'ZW' => 'ZWE',
+        ];
+
+        return $conversions[$iso2] ?? null;
+    }
+
 }

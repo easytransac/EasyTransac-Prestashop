@@ -35,35 +35,36 @@ class EasyTransacInstall
      */
     public function createTables()
     {
-        if (!Db::getInstance()->Execute('
-		CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'easytransac_customer` (
-			`id_customer` int(10) unsigned NOT NULL,
-			`client_id` VARCHAR(20) NOT NULL,
-			PRIMARY KEY (`id_customer`)
-		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;
-			ALTER TABLE `'._DB_PREFIX_.'easytransac_customer` ADD KEY `easytransac_client_id` (`client_id`);')) {
-            return false;
-        }
-		if (!Db::getInstance()->Execute('
-		CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'easytransac_transaction` (
-			`id_order` int(10) unsigned NOT NULL,
-			`external_id` VARCHAR(20) NOT NULL,
-			PRIMARY KEY (`id_order`)
-		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')) {
-            return false;
-        }
+        $sqls = [
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'easytransac_customer` (
+                `id_customer` int(10) unsigned NOT NULL,
+                `client_id` VARCHAR(20) NOT NULL,
+                PRIMARY KEY (`id_customer`)                
+            ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;',
 
-		if (!Db::getInstance()->Execute('
-		CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'easytransac_message` (
-			`id_order` int(10) unsigned NOT NULL,
-			`date` DATETIME NOT NULL,
-			`message` VARCHAR(256) NOT NULL,
-			`status` VARCHAR(20) NOT NULL,
-			`external_id` VARCHAR(20) NOT NULL,
-			`amount` int(10) NULL,
-			INDEX (`id_order`)
-		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;')) {
-            return false;
+            'ALTER TABLE `' . _DB_PREFIX_ . 'easytransac_customer` ADD KEY `easytransac_client_id` (`client_id`);',
+
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'easytransac_transaction` (
+                `id_order` int(10) unsigned NOT NULL,
+                `external_id` VARCHAR(20) NOT NULL,
+                PRIMARY KEY (`id_order`)
+            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;',
+
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'easytransac_message` (
+                `id_order` int(10) unsigned NOT NULL,
+                `date` DATETIME NOT NULL,
+                `message` VARCHAR(256) NOT NULL,
+                `status` VARCHAR(20) NOT NULL,
+                `external_id` VARCHAR(20) NOT NULL,
+                `amount` int(10) NULL,
+                INDEX (`id_order`)
+            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
+        ];
+
+        foreach ($sqls as $sql) {
+            if (!Db::getInstance()->Execute($sql)) {
+                return false;
+            }
         }
     }
 	
