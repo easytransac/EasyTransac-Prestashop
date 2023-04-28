@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 $_MODULE['<{easytransac}prestashop>easytransac_75ab54de263e8bb786d432340d84739a'] = 'Paiement par carte bancaire Easytransac';
 $_MODULE['<{easytransac}prestashop>easytransac_2f4f3508024221569e0d0feb193ff5ce'] = 'Acceptez les paiements par carte bancaire, en une ou plusieurs fois, avec le module d\'encaissement 100% français EasyTransac';
 $_MODULE['<{easytransac}prestashop>easytransac_876f23178c29dc2552c0b48bf23cd9bd'] = 'Êtes-vous sûr de vouloir désinstaller ?';
