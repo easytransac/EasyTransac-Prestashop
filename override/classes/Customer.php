@@ -1,50 +1,36 @@
 <?php
-
+/**
+ * @author Easytransac SAS
+ * @copyright Copyright (c) 2022 Easytransac
+ * @license Apache 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 class Customer extends CustomerCore
 {
+    public function getClient_id()
+    {
+        $sql = 'SELECT client_id FROM `' . _DB_PREFIX_ . 'easytransac_customer` '
+            . ' WHERE id_customer = \'' . $this->id . '\'';
 
-	function getClient_id()
-	{
-		$sql = 'SELECT client_id FROM `' . _DB_PREFIX_ . 'easytransac_customer` '
-				. ' WHERE id_customer = \'' . $this->id . '\'';
-		return Db::getInstance()->getValue($sql);
-	}
+        return Db::getInstance()->getValue($sql);
+    }
 
-	function setClient_id($client_id)
-	{
-		Db::getInstance()->insert('easytransac_customer', [
-					'id_customer' => (int)$this->id,
-					'client_id' => pSQL($client_id),
-		]);
-	}
-
-	/**
-	 * Retrieve customers by client id.
-	 *
-	 * @param $clientId
-	 * @return array
-	 */
-	public static function getByClientId($clientId)
-	{
-		$sql = 'SELECT Customer.*
-				FROM `' . _DB_PREFIX_ . 'easytransac_customer` as ETCustomer
-				JOIN `' . _DB_PREFIX_ . 'customer` AS Customer ON Customer.id_customer = ETCustomer.id_customer
-				WHERE ETCustomer.`client_id` = \'' . pSQL($clientId) . '\'';
-
-		$result = Db::getInstance()->getRow($sql);
-		if (!$result)
-		{
-			return false;
-		}
-		$this->id = $result['id_customer'];
-		foreach ($result as $key => $value)
-		{
-			if (property_exists($this, $key))
-			{
-				$this->{$key} = $value;
-			}
-		}
-		return $this;
-	}
-
+    public function setClient_id($client_id)
+    {
+        Db::getInstance()->insert('easytransac_customer', [
+            'id_customer' => (int) $this->id,
+            'client_id' => pSQL($client_id),
+        ]);
+    }
 }

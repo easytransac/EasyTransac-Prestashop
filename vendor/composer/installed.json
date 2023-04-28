@@ -52,6 +52,6 @@
             "install-path": "../easytransac/easytransac-sdk-php"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

@@ -31,7 +31,7 @@
               </label>
     
     <div class="col-sm">
-      {$notice}
+      {$notice|escape:'html':'UTF-8'}
     </div>
 
 {if $show_history}
@@ -60,24 +60,24 @@
 {foreach from=$history item=item}
         <tr class="d-print-none">
           <td>
-          {$item['date']}
+          {$item['date']|escape:'html':'UTF-8'}
           </td>
 
           <td>
-          {$item['message']}
+          {$item['message']|escape:'html':'UTF-8'}
           </td>
 
           <td>
-          {$item['status']}
+          {$item['status']|escape:'html':'UTF-8'}
           </td>
 
           <td>
-          {$item['external_id']}
+          {$item['external_id']|escape:'html':'UTF-8'}
           </td>
 
           <td>
           {if $item['amount'] != 0}
-            {$item['amount']} €
+            {$item['amount']|escape:'html':'UTF-8'} €
           {/if}
           </td>
         </tr>

@@ -4,5 +4,9 @@
     },
     "config": {
         "prepend-autoloader": false
+    },
+    "require-dev": {
+        "prestashop/php-dev-tools": "^4.3",
+        "prestashop/autoindex": "^2.1"
     }
 }

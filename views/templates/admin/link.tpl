@@ -15,4 +15,4 @@
  *
  */
  -->
-<a target="_blank" href="{$link}">{$title}</a>
+<a target="_blank" href="{$link|escape:'url':'UTF-8'}">{$title|escape:'html':'UTF-8'}</a>

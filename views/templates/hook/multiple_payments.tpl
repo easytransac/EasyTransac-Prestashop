@@ -58,9 +58,9 @@ h5.easytransac{
     const i18n4 = '{l s='Pay in 4 times' mod='easytransac'}';
     const i18nLabel = '{l s='Recurrence' mod='easytransac'}';
     const enableInstallment = [
-                                [{$enableInstallment2}, i18n2, 2],
-                                [{$enableInstallment3}, i18n3, 3],
-                                [{$enableInstallment4}, i18n4, 4],
+                                [{$enableInstallment2|escape:'html':'UTF-8'}, i18n2, 2],
+                                [{$enableInstallment3|escape:'html':'UTF-8'}, i18n3, 3],
+                                [{$enableInstallment4|escape:'html':'UTF-8'}, i18n4, 4],
     ];
                             
 </script>

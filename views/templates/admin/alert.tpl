@@ -15,4 +15,4 @@
  *
  */
  -->
-<div class="alert-danger" style="padding:5px;">{$message}</div>
+<div class="alert-danger" style="padding:5px;">{$message|escape:'html':'UTF-8'}</div>
