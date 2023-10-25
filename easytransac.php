@@ -32,7 +32,7 @@ class EasyTransac extends PaymentModule
      */
     private $debugLogEnabled = false;
 
-    public int $is_eu_compatible;
+    public $is_eu_compatible;
 
     /**
      * Module init.
